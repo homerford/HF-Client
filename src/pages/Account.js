@@ -30,11 +30,6 @@ function Account(props) {
     },[]);
 
     // Handling functions
-    let firstName = currentUser.User_firstname;
-    let lastName = sessionStorage.getItem('lastName')
-    let phone = sessionStorage.getItem('phone')
-    let email = sessionStorage.getItem('email')
-
     async function getUserReservations() {
         let response = await fetch("http://3.218.225.62:3040/reservation/get-user/"+currentUser.User_id);
         response = await response.json();
