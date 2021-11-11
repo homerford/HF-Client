@@ -2,7 +2,7 @@
 git add .
 
 // Commit local repo with message
-git commit -m "New"
+git commit -m "Initial Commit New"
 
 // Push to remote repo
 git push -u origin main
