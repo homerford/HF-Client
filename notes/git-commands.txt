@@ -1,0 +1,19 @@
+// Add all to local repo
+git add .
+
+// Commit local repo with message
+git commit -m "Added live reservation updates for admin."
+
+// Push to remote repo
+git push -u origin master
+
+// Pull changes
+git pull
+
+// Pull a large amount of changes that will require overwriting
+git fetch origin master
+git reset --hard FETCH_HEAD
+git clean -df
+
+
+git remote set-url origin https://github.com/colekuivenhoven/HFTennisCenter.git

@@ -1,0 +1,41 @@
+@font-face {
+    font-family: 'Round';
+    src: local('Round'), url('../fonts/VarelaRound-Regular.ttf');
+}
+
+.container-admin {
+    width: 100vw;
+    top: 7vmin;
+    bottom: 0;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 2vmin;
+    background-color: rgb(250, 250, 250);
+}
+
+.chart-container {
+    background-color: rgba(255,255,255, 1);
+    width: 35vmin;
+    aspect-ratio: 1;
+    border-radius: 1vmin;
+    padding: 1vmin;
+    margin-top: 2vmin;
+    margin-left: 2vmin;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 4px 12px 4px rgba(0,0,0,0.075);
+}
+
+.chart-title {
+    position: absolute;
+    top: 1vmin;
+    font-size: 1.5vmin;
+    font-weight: bold;
+}
+
+/* Animations */
