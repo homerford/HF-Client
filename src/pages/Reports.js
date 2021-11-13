@@ -20,7 +20,7 @@ function Reports() {
     const [reportModalCategory, setReportModalCategory] = useState('');
     const [reportModalItems, setReportModalItems] = useState([]);
 
-    const reports = [
+    const reports_reservations = [
         {
             title: `Planned Event Reservations`,
             description: `This report shows all future special event reservations that have been made.`,
@@ -30,13 +30,42 @@ function Reports() {
                 FROM RESERVATION
                 JOIN USER ON USER.User_id = RESERVATION.Customer_id
                 WHERE Reservation_type = 1
+                AND RESERVATION.Reservation_status = 1
                 ORDER BY UNIX_TIMESTAMP(STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y')) ASC
             `,
         },
         {
+            title: `Today's Reservations`,
+            description: `This report will show the number of customer reservations at the end of the day`,
+            category: `Reservation`,
+            query: `
+                SELECT USER.User_firstname, USER.User_lastname, USER.User_phone, RESERVATION.Reservation_time, date_format(NOW() - INTERVAL 1 DAY, '%m/%e/%Y') AS Date
+                FROM RESERVATION
+                JOIN USER ON USER.User_id = RESERVATION.Customer_id
+                WHERE RESERVATION.Reservation_date = date_format(NOW() - INTERVAL 1 DAY, '%m/%e/%Y')
+                AND RESERVATION.Reservation_status = 1
+            `,
+        },
+        {
+            title: `Anticipated Reservations`,
+            description: `This report will show the number of future customer reservations that have been made`,
+            category: `Reservation`,
+            query: `
+                SELECT date_format(STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y'), '%m/%d/%Y') AS Date, COUNT(RESERVATION.Customer_id) AS Todays_Reservations
+                FROM RESERVATION
+                WHERE STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y') >= date_format(curdate(), '%m/%e/%Y')
+                AND RESERVATION.Reservation_status = 1
+                GROUP BY Date
+                ORDER BY Date ASC
+            `,
+        },
+    ]
+
+    const reports_users = [
+        {
             title: `Most Frequent Users`,
             description: `This report orders all users by the number of reservations they've made.`,
-            category: `Reservation`,
+            category: `User`,
             query: `
                 SELECT USER.User_email, COUNT(RESERVATION.Customer_id) AS Total_Reservations
                 FROM USER
@@ -71,53 +100,24 @@ function Reports() {
             `,
         },
         {
-            title: `Upcoming Business Closures`,
-            description: `Any business closures that have been planned over the next year`,
-            category: `Closure`,
+            title: `Customers With Alerts Enabled`,
+            description: `This report will show all active customer accounts who've chosen to receieve email alerts.`,
+            category: `User`,
             query: `
-                SELECT CLOSURE.Closure_id, date_format(STR_TO_DATE(CLOSURE.Closure_date, '%m/%e/%Y'), '%m/%d/%Y') AS Date
-                FROM CLOSURE
-                WHERE CLOSURE.Closure_date <= date_format(curdate(), '%m/%e/%Y')
-                ORDER BY UNIX_TIMESTAMP(STR_TO_DATE(CLOSURE.Closure_date, '%m/%e/%Y')) ASC
+                SELECT 
+                    User_email AS Email
+                FROM USER
+                WHERE User_getAnnouncements = 1
+                ORDER BY User_email ASC
             `,
         },
-        {
-            title: `Today's Reservations`,
-            description: `This report will show the number of customer reservations at the end of the day`,
-            category: `Reservation`,
-            query: `
-                SELECT date_format(STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y'), '%m/%e/%Y') AS Date, COUNT(RESERVATION.Customer_id) AS Todays_Reservations
-                FROM RESERVATION
-                WHERE RESERVATION.Reservation_date = date_format(curdate(), '%m/%e/%Y')
-            `,
-        },
-        {
-            title: `Today's Reservations(New)`,
-            description: `This report will show the number of customer reservations at the end of the day`,
-            category: `Reservation`,
-            query: `
-                SELECT USER.User_firstname, USER.User_lastname, USER.User_phone, RESERVATION.Reservation_time, NOW() - INTERVAL 1 DAY AS Date
-                FROM RESERVATION
-                JOIN USER ON USER.User_id = RESERVATION.Customer_id
-                WHERE RESERVATION.Reservation_date = date_format(NOW() - INTERVAL 1 DAY, '%m/%e/%Y')
-            `,
-        },
-        {
-            title: `Anticipated Reservations`,
-            description: `This report will show the number of future customer reservations that have been made`,
-            category: `Reservation`,
-            query: `
-                SELECT date_format(STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y'), '%m/%d/%Y') AS Date, COUNT(RESERVATION.Customer_id) AS Todays_Reservations
-                FROM RESERVATION
-                WHERE RESERVATION.Reservation_date <= date_format(curdate(), '%m/%e/%Y')
-                GROUP BY Date
-                ORDER BY Date ASC
-            `,
-        },
+    ]
+
+    const reports_courts = [
         {
             title: `Number of Courts Used Today`,
             description: `This report will show the number of courts that were used for the day.`,
-            category: `Reservation`,
+            category: `Court`,
             query: `
                 SELECT 
                     date_format(STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y'), '%m/%d/%Y') AS Date, 
@@ -125,7 +125,164 @@ function Reports() {
                     
                 FROM RESERVATION
                 WHERE RESERVATION.Reservation_date = date_format(curdate(), '%m/%e/%Y')
+                AND RESERVATION.Reservation_status = 1
                 ORDER BY UNIX_TIMESTAMP(STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y')) ASC
+            `,
+        },
+        {
+            title: `Number of Courts Used This Month`,
+            description: `This report will show the number of courts that have been used for the current month.`,
+            category: `Court`,
+            query: `
+                SELECT 
+                    month(current_date()) AS Month,
+                    year(current_date()) AS Year,
+                    SUM(JSON_LENGTH(RESERVATION.Court_id)) AS Total_Courts_Used
+                FROM RESERVATION
+                WHERE month(STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y')) = month(current_date())
+            `,
+        },
+        {
+            title: `Number of Courts Used This Year`,
+            description: `This report will show the number of courts that have been used for the current year.`,
+            category: `Court`,
+            query: `
+                SELECT 
+                    year(current_date()) AS Year,
+                    SUM(JSON_LENGTH(RESERVATION.Court_id)) AS Total_Courts_Used
+                FROM RESERVATION
+                WHERE year(STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y')) = year(current_date())
+            `,
+        },
+        {
+            title: `Number of Courts Used Each Day`,
+            description: `This report will show the number of courts that are used each day.`,
+            category: `Court`,
+            query: `
+                SELECT 
+                    date_format(STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y'), '%m/%d/%Y') AS Date, COUNT(RESERVATION.Court_id) AS Court_Count
+                FROM RESERVATION
+                WHERE Reservation_status = '1'
+                GROUP BY Date
+            `,
+        },
+    ]
+
+    const reports_feedback = [
+        {
+            title: `Negative Feedback Received`,
+            description: `This report will show all negative feedback received, ordered by most recent.`,
+            category: `Feedback`,
+            query: `
+                SELECT 
+                    date_format(STR_TO_DATE(Feedback_date, '%m/%e/%Y'), '%m/%d/%Y') AS Date,
+                    IF(Feedback_rating = '0', 'Awful', IF(Feedback_rating = '1', 'Bad', 'Okay')) AS Rating,
+                    IF(Feedback_type = '0', 'Staff', IF(Feedback_type = '1', 'Court', IF(Feedback_type = '2', 'Facility', IF(Feedback_type = '3', 'Suggestion', IF(Feedback_type = '4', 'Website', 'Other'))))) AS Category,
+                    USER.User_email AS Email,
+                    Feedback_note AS Note
+                FROM FEEDBACK
+                JOIN USER ON USER.User_id = FEEDBACK.Customer_id
+                WHERE Feedback_rating <= 2
+                ORDER BY UNIX_TIMESTAMP(STR_TO_DATE(Feedback_date, '%m/%e/%Y')) ASC
+            `,
+        },
+        {
+            title: `Staff Complaints Received`,
+            description: `This report will show all complaints made about the staff.`,
+            category: `Feedback`,
+            query: `
+                SELECT 
+                    date_format(STR_TO_DATE(Feedback_date, '%m/%e/%Y'), '%m/%d/%Y') AS Date,
+                    IF(Feedback_rating = '0', 'Awful', IF(Feedback_rating = '1', 'Bad', 'Okay')) AS Rating,
+                    IF(Feedback_type = '0', 'Staff', IF(Feedback_type = '1', 'Court', IF(Feedback_type = '2', 'Facility', IF(Feedback_type = '3', 'Suggestion', IF(Feedback_type = '4', 'Website', 'Other'))))) AS Category,
+                    USER.User_email AS Email,
+                    Feedback_note AS Note
+                FROM FEEDBACK
+                JOIN USER ON USER.User_id = FEEDBACK.Customer_id
+                WHERE Feedback_rating <= 2
+                AND LENGTH(Feedback_note) > 0
+                AND Feedback_type = '0'
+                ORDER BY UNIX_TIMESTAMP(STR_TO_DATE(Feedback_date, '%m/%e/%Y')) ASC
+            `,
+        },
+        {
+            title: `Court Complaints Received`,
+            description: `This report will show all complaints made about the courts.`,
+            category: `Feedback`,
+            query: `
+                SELECT 
+                    date_format(STR_TO_DATE(Feedback_date, '%m/%e/%Y'), '%m/%d/%Y') AS Date,
+                    IF(Feedback_rating = '0', 'Awful', IF(Feedback_rating = '1', 'Bad', 'Okay')) AS Rating,
+                    IF(Feedback_type = '0', 'Staff', IF(Feedback_type = '1', 'Court', IF(Feedback_type = '2', 'Facility', IF(Feedback_type = '3', 'Suggestion', IF(Feedback_type = '4', 'Website', 'Other'))))) AS Category,
+                    USER.User_email AS Email,
+                    Feedback_note AS Note
+                FROM FEEDBACK
+                JOIN USER ON USER.User_id = FEEDBACK.Customer_id
+                WHERE Feedback_rating <= 2
+                AND LENGTH(Feedback_note) > 0
+                AND Feedback_type = '1'
+                ORDER BY UNIX_TIMESTAMP(STR_TO_DATE(Feedback_date, '%m/%e/%Y')) ASC
+            `,
+        },
+    ]
+
+    const reports_closures = [
+        {
+            title: `Upcoming Business Closures`,
+            description: `Any business closures that have been planned over the next year`,
+            category: `Closure`,
+            query: `
+                SELECT CLOSURE.Closure_id, date_format(STR_TO_DATE(CLOSURE.Closure_date, '%m/%e/%Y'), '%m/%d/%Y') AS Date
+                FROM CLOSURE
+                WHERE STR_TO_DATE(CLOSURE.Closure_date, '%m/%e/%Y') >= date_format(curdate(), '%m/%e/%Y')
+                ORDER BY UNIX_TIMESTAMP(STR_TO_DATE(CLOSURE.Closure_date, '%m/%e/%Y')) ASC
+            `,
+        },
+        {
+            title: `Past Business Closures`,
+            description: `Any business closures that have been occured before the current day`,
+            category: `Closure`,
+            query: `
+                SELECT CLOSURE.Closure_id, date_format(STR_TO_DATE(CLOSURE.Closure_date, '%m/%e/%Y'), '%m/%d/%Y') AS Date
+                FROM CLOSURE
+                WHERE STR_TO_DATE(CLOSURE.Closure_date, '%m/%e/%Y') < NOW() - INTERVAL 1 DAY
+                ORDER BY UNIX_TIMESTAMP(STR_TO_DATE(CLOSURE.Closure_date, '%m/%e/%Y')) ASC
+            `,
+        },
+    ]
+
+    const reports_equipment = [
+        {
+            title: `Racket Usage`,
+            description: `This reports lists the reservations where a racket was used.`,
+            category: `Equipment`,
+            query: `
+                SELECT 
+                    Reservation_id, Reservation_date AS Date, Reservation_time AS Start_Time, Reservation_duration AS Duration_Hours
+                FROM RESERVATION
+                WHERE JSON_CONTAINS(Equipment_id, '0') = 1
+            `,
+        },
+        {
+            title: `Hopper Usage`,
+            description: `This reports lists the reservations where a hopper was used.`,
+            category: `Equipment`,
+            query: `
+                SELECT 
+                    Reservation_id, Reservation_date AS Date, Reservation_time AS Start_Time, Reservation_duration AS Duration_Hours
+                FROM RESERVATION
+                WHERE JSON_CONTAINS(Equipment_id, '1') = 1
+            `,
+        },
+        {
+            title: `Ball Machine Usage`,
+            description: `This reports lists the reservations where a ball machine was used.`,
+            category: `Equipment`,
+            query: `
+                SELECT 
+                    Reservation_id, Reservation_date AS Date, Reservation_time AS Start_Time, Reservation_duration AS Duration_Hours
+                FROM RESERVATION
+                WHERE JSON_CONTAINS(Equipment_id, '2') = 1
             `,
         },
     ]
@@ -213,38 +370,75 @@ function Reports() {
         setReportModalCategory('');
     }
 
+    function renderReportSet(data_object) {
+        return (
+            <>
+                {data_object.map((report, index) => {
+                    return (
+                        <div className="report-item" key={index}>
+                            <div className="report-title">
+                                {report.title}
+                            </div>
+                            <div className="report-description">
+                                {report.description}
+                            </div>
+                            <div className="report-footer">
+                                <div className="report-category">
+                                    {report.category}
+                                </div>
+                                <div className="report-open"
+                                    onClick={() => handleReportOpen(report.query, report.category, report.title)}
+                                >
+                                    Open
+                                </div>
+                                <div className="report-download"
+                                    onClick={() => handleReportDownload(report.query, report.category, report.title)}
+                                >
+                                    Download
+                                </div>
+                            </div>
+                        </div>
+                    )
+                })}
+            </>
+        )
+    }
+
     return (
         <>
             <div className="container-reports">
+
+                <div className="reports-linebreak">Reservations</div>
                 <div className="reports-content">
-                    {reports.map((report, index) => {
-                        return (
-                            <div className="report-item" key={index}>
-                                <div className="report-title">
-                                    {report.title}
-                                </div>
-                                <div className="report-description">
-                                    {report.description}
-                                </div>
-                                <div className="report-footer">
-                                    <div className="report-category">
-                                        {report.category}
-                                    </div>
-                                    <div className="report-open"
-                                        onClick={() => handleReportOpen(report.query, report.category, report.title)}
-                                    >
-                                        Open
-                                    </div>
-                                    <div className="report-download"
-                                        onClick={() => handleReportDownload(report.query, report.category, report.title)}
-                                    >
-                                        Download
-                                    </div>
-                                </div>
-                            </div>
-                        )
-                    })}
+                    {renderReportSet(reports_reservations)}
                 </div>
+
+                <div className="reports-linebreak">Users</div>
+                <div className="reports-content">
+                    {renderReportSet(reports_users)}
+                </div>
+
+                <div className="reports-linebreak">Courts</div>
+                <div className="reports-content">
+                    {renderReportSet(reports_courts)}
+                </div>
+
+                <div className="reports-linebreak">Feedback</div>
+                <div className="reports-content">
+                    {renderReportSet(reports_feedback)}
+                </div>
+
+                <div className="reports-linebreak">Closures</div>
+                <div className="reports-content">
+                    {renderReportSet(reports_closures)}
+                </div>
+
+                <div className="reports-linebreak">Equipment</div>
+                <div className="reports-content">
+                    {renderReportSet(reports_equipment)}
+                </div>
+
+                <div className="reports-linebreak" style={{opacity: 0}}>End</div>
             </div>
             <div className={`modal-report ${reportModalOpen ? "active" : ""}`}>
                 <div className={`modal-report-content ${reportModalOpen ? "active" : ""}`}>

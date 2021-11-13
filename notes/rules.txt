@@ -1,31 +1,20 @@
 Equipment:
-    If ballmachine is being used in another reservation, then the ballmachine is not available to reserve at the same time.
 
 Reservations:
-    Allow employee accounts to access the extended reservation page to a somewhat limited extent.
 
 Alerts:
 
 Login:
-    --Allow customers to reset their password via email.
     --Redirect appropriately if user is not logged in.
 
 Admin:
-    Create 3 important reports that fit a pie chart, bar chart, and line chart, respectively.
-    --Replace logs with feedback list for admin to view.
-    --If you delete your own account, log out user.
 
 Reports:
-    Add SQL-based reports to reports page.
-    Figure out 3 best reports for graphs.
 
 Account:
-    Add reset password feature to account page.
     Business pics
 
 Contact:
-    Create a contact form that allows customers to send feedback.
-    Feedback form
 
 Documentation:
     1. Combine System architecture diagram & Network architecture diagram

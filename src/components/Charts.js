@@ -47,11 +47,11 @@ function Charts(props) {
             >
                 <V.VictoryAxis
                     tickValues={[1, 2, 3, 4, 5, 6, 7]}
-                    tickFormat={["Bob", "Sally", "Jane", "Jose", "John", "Rob", "Elli"]}
+                    tickFormat={(y) => (`${y.substring(0,y.length-5)}`)}
                 />
                 <V.VictoryAxis
                     dependentAxis
-                    tickFormat={(x) => (`${x} hr`)}
+                    tickFormat={(x) => (`${x}`)}
                 />
                 <V.VictoryBar
                     name="Bar-1"
@@ -59,7 +59,7 @@ function Charts(props) {
                     x="user"
                     y="duration"
                     style={{ data: { fill: "rgba(66, 186, 255, 0.5)", stroke: 0 } }}
-                    labels={({ datum }) => `${(datum.duration).toFixed(0)} hr`}
+                    labels={({ datum }) => `${(datum.duration).toFixed(0)}`}
                     labelComponent={
                         <V.VictoryTooltip
                             dy={-5}
@@ -126,14 +126,14 @@ function Charts(props) {
                 />
                 <V.VictoryAxis
                     dependentAxis
-                    tickFormat={(x) => (`$${x / 1000}k`)}
+                    tickFormat={(x) => x}
                 />
                 <V.VictoryLine
                     name="Line-1"
                     interpolation="basis"
                     data={chartData}
-                    x="month"
-                    y="revenue"
+                    x="x"
+                    y="y"
                     style={{ data: { stroke: colors.warm, strokeWidth: 5 } }}
                     // labels={({ datum }) => `$${(datum.earnings/1000).toFixed(2)}k`}
                     // labelComponent={<V.VictoryLabel renderInPortal dy={-20}/>}
@@ -142,11 +142,11 @@ function Charts(props) {
                 <V.VictoryScatter 
                     name="Scatter-1"
                     data={chartData}
-                    x="month"
-                    y="revenue"
+                    x="x"
+                    y="y"
                     size={7}
                     style={{ data: { fill: colors.warm, stroke: colors.black, strokeWidth: 2, opacity: "25%" } }}
-                    labels={({ datum }) => `$${(datum.revenue/1000).toFixed(2)}k`}
+                    labels={({ datum }) => datum.y}
                     labelComponent={<V.VictoryLabel renderInPortal dy={-15} style={{ fontSize: 16, fill: "rgba(0,0,0,0.0)" }}/>}
                 />
             </V.VictoryChart>

@@ -17,6 +17,7 @@ import Register from './pages/Register.js';
 import Test from './pages/Test.js';
 import Practice from './pages/Practice.js';
 import Reports from './pages/Reports.js';
+import PasswordReset from './pages/passwordreset.js';
 
   // Importing the router files
 import {
@@ -71,7 +72,7 @@ function App() {
             <Link className="new-route-link-menu" to="/contact">Contact</Link>
             {loggedIn && <Link className="new-route-link-menu" to="/account">Account</Link>}
             <Link className="new-route-link-menu" to={loggedIn ? "/reserve" : "/login"}>Reserve</Link>
-            {(currentUser && currentUser.User_type == 2) && <Link className="new-route-link-menu" to="/admin">Admin</Link>}
+            {(currentUser && (currentUser.User_type == 2 || currentUser.User_type == 1)) && <Link className="new-route-link-menu" to="/admin">Manage</Link>}
             {loggedIn && 
               <div className="new-route-link-menu-2"
                 onClick={() => {
@@ -97,13 +98,13 @@ function App() {
             <AdminHome isMobile={isMobile} />
           </Route> */}
           <Route path="/admin">
-            <Admin isMobile={isMobile} />
+            {loggedIn ? <Admin isMobile={isMobile}/> : <Login isMobile={isMobile} />}
           </Route>
           <Route path="/reports">
-            <Reports isMobile={isMobile} />
+            {loggedIn ? <Reports isMobile={isMobile} /> : <Login isMobile={isMobile} />}
           </Route>
           <Route path="/account">
-            <Account isMobile={isMobile} />
+            {loggedIn ? <Account isMobile={isMobile} /> : <Login isMobile={isMobile} />}
           </Route>
           <Route path="/about">
             <About isMobile={isMobile} />
@@ -112,10 +113,10 @@ function App() {
             <Contact isMobile={isMobile} />
           </Route>
           <Route path="/reserve">
-            <ReserveCustomer isMobile={isMobile} socket={socket}/>
+            {loggedIn ? <ReserveCustomer isMobile={isMobile} socket={socket}/> : <Login isMobile={isMobile} />}
           </Route>
           <Route path="/reserveadmin">
-            <ReserveAdmin isMobile={isMobile} socket={socket}/>
+            {loggedIn ? <ReserveAdmin isMobile={isMobile} socket={socket}/> : <Login isMobile={isMobile} />}
           </Route>
           <Route path="/login">
             <Login isMobile={isMobile} />
@@ -124,10 +125,13 @@ function App() {
             <Register isMobile={isMobile} currentUser={currentUser} />
           </Route>
           <Route path="/test/:id">
-            <Test isMobile={isMobile} currentUser={currentUser} socket={socket}/>
+            {loggedIn ? <Test isMobile={isMobile} currentUser={currentUser} socket={socket}/> : <Login isMobile={isMobile} />}
           </Route>
           <Route path="/practice">
             <Practice isMobile={isMobile} currentUser={currentUser} />
+          </Route>
+          <Route path="/password-reset/:id">
+            <PasswordReset isMobile={isMobile} />
           </Route>
           <Route path="/">
             <Home isMobile={isMobile} currentUser={currentUser} />

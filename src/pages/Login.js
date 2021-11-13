@@ -287,6 +287,12 @@ function Login(props) {
         });
     }
 
+    async function handleSendPasswordReset(email) {
+        let response = await fetch("http://3.218.225.62:3040/email/reset-password/"+email);
+        console.log(response);
+        sendAlertMessage("Password reset email sent!", "Good");
+    }
+
     return (
         // Empty root element. The return can have only one root element
         <>
@@ -326,12 +332,33 @@ function Login(props) {
                                     }}
                                 />
                             </div>
-                            <div className="login-submit-button"
-                                onClick={() => {
-                                    handleLogin(guessEmail,guessPassword);
-                                }}
-                            >
-                                Login
+                            <div className="login-btn-row">
+                                <div className="login-submit-button"
+                                    style={{ 
+                                        width: "auto", 
+                                        paddingLeft: "1vmin", 
+                                        paddingRight: "1vmin", 
+                                        height: "3vmin", 
+                                        marginRight: "auto", 
+                                        marginLeft: "0",
+                                        backgroundColor: "transparent",
+                                        color: "rgba(66, 135, 245, 0.7)",
+                                        boxShadow: "none",
+                                        fontSize: "1.5vmin",
+                                    }}
+                                    onClick={() => {
+                                        handleSendPasswordReset(guessEmail);
+                                    }}
+                                >
+                                    Forgot Password?
+                                </div>
+                                <div className="login-submit-button"
+                                    onClick={() => {
+                                        handleLogin(guessEmail,guessPassword);
+                                    }}
+                                >
+                                    Login
+                                </div>
                             </div>
                         </form>
                     </div>

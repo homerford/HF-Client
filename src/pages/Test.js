@@ -484,7 +484,13 @@ function Test(props) {
                         </span>
                         <span className="test-add-text">
                             Status: 
-                            <select className="test-add-select" style={editing ? {color : 'rgba(66, 135, 245, 0.7)'} : {}} value={testStatus} onChange={(e) => {setTestStatus(e.target.value)}}>
+                            <select 
+                                className="test-add-select" 
+                                style={editing ? {color : 'rgba(66, 135, 245, 0.7)'} : {}} 
+                                value={testStatus} 
+                                onChange={(e) => {setTestStatus(e.target.value)}}
+                                disabled={(currentUser.User_type == 2) ? false : true}
+                            >
                                 <option value="1">Active</option>
                                 <option value="0">Inactive</option>
                                 <option value="2">Unverified</option>
@@ -579,7 +585,7 @@ function Test(props) {
                                 </div> */}
                             </div>
                             
-                            {(currentUser.User_id != selectedUser.User_id) && <div 
+                            {(currentUser.User_id != selectedUser.User_id && currentUser.User_type == 2) && <div 
                                 className={`info-delete ${deleteConfirm ? "selected" : ""}`}
                                 onClick={() => {
                                     // handleDelete(selectedUser.User_id);

@@ -437,6 +437,7 @@ function ReserveAdmin(props) {
         });
 
         return () => {
+            socket.off(`reservation-refresh`);
             gotReservationData = false;
         }
     }, []);
@@ -974,7 +975,7 @@ function ReserveAdmin(props) {
                                 Edit
                             </span>}
                             {/* (currentUser) && (currentUser.User_id == reservations.find(el => el.id == slots[startIndex].reservation).customer_id) &&  */}
-                            {<span className="res-text-button" style={{marginRight: '0.75vmin', color: 'rgba(0,0,0,0.45)'}}
+                            {(currentUser.User_type == 2) && <span className="res-text-button" style={{marginRight: '0.75vmin', color: 'rgba(0,0,0,0.45)'}}
                                 onClick={(e) => {
                                     var parentElement = returnData[e.currentTarget.parentNode.id];
                                     var testRootId = parentElement.props.children[0].props.children[1].props.children;

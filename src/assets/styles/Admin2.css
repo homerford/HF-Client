@@ -225,6 +225,26 @@
     transition: all 0.25s linear;
 }
 
+.feedback-item {
+    background-color: rgba(0, 102, 255, 0.0);
+    width: 100%;
+    height: auto;
+    border-radius: 1vmin;
+    font-family: Round;
+    font-weight: bold;
+    font-size: 1.1vmin;
+    color: rgba(0,0,0,0.5);
+    padding: 0.5vmin;
+    box-sizing: border-box;
+    border: 0.25vmin solid rgba(0, 102, 255, 0.0);
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+}
+
+.feedback-item:hover {
+    border: 0.25vmin solid rgba(0, 102, 255, 0.5);
+}
+
 .container-log-item {
     background-color: rgba(255,0,0,0);
     width: 100%;
@@ -391,7 +411,7 @@
     position: absolute;
     bottom: calc(50% + 4vmin);
     background-color: rgba(0,0,0,0.05);
-    width: 70vmin;
+    width: 65vmin;
     height: 5vmin;
     border-radius: 0.75vmin;
     display: flex;
@@ -485,7 +505,7 @@
 
 .admin2-chart-title {
     position: absolute;
-    top: 3vmin;
+    top: 4vmin;
     background-color: rgba(255,0,0,0);
     width: 15%;
     color: rgba(0,0,0,0.4);
