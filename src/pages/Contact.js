@@ -100,7 +100,7 @@
                                 <br/>
                                 Weekends: 7:30 AM – 6:00 PM 
                                 <br/>
-                                Closed: December 25th, Thanksgiving, January 1st.<br/>
+                                Closed: Thanksgiving, December 25th, January 1st<br/>
                             </p>
                             <p>
                                 <span style={{fontWeight: "bold"}}>Manager:</span>

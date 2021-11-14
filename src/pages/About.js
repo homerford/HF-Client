@@ -11,6 +11,7 @@
     function About(props) {
         const [loggedIn, setLogginIn] = useState(window.sessionStorage.getItem('current_user') ? true : false);
         const [currentUser, setCurrentUser] = useState(JSON.parse(window.sessionStorage.getItem('current_user')));
+        const [fullscreen, setFullscreen] = useState(false);
     
         // Regular varaible declaration
         const pageTitle = "About"
@@ -91,10 +92,20 @@
                     <div className="test-container">
                         <div className="top-row">
                             <div className="top-item-container" style={{width: "90%"}}>
-                                <div className="map-item-1" />
+                                <div className="map-item-1"
+                                    onClick={() => {
+                                        setFullscreen(true);
+                                        document.querySelector('.fullscreen-img').classList.add('map1');
+                                    }}
+                                />
                             </div>
                             <div className="top-item-container">
-                                <div className="map-item-2" />
+                                <div className="map-item-2" 
+                                    onClick={() => {
+                                        setFullscreen(true);
+                                        document.querySelector('.fullscreen-img').classList.add('map2');
+                                    }}
+                                />
                             </div>
                         </div>
                         <div className="bottom-row">
@@ -112,6 +123,22 @@
                     {loggedIn && <div className="user-welcome">Welcome back, <b style={{marginLeft: '0.5vmin'}}>{currentUser.User_firstname}</b>!</div>}
                 </div>
                 <Loading timeRange={[250, 500]} />
+                <div className={`fullscreen-modal ${fullscreen ? "active" : ""}`}
+                    onClick={() => {
+                        setFullscreen(false);
+                        document.querySelector('.fullscreen-img').classList.remove('map1');
+                        document.querySelector('.fullscreen-img').classList.remove('map2');
+                    }}
+                >
+                    <div className={`fullscreen-img`} 
+                        onClick={() => {
+                            setFullscreen(false);
+                            document.querySelector('.fullscreen-img').classList.remove('map1');
+                            document.querySelector('.fullscreen-img').classList.remove('map2');
+                        }}
+                    />
+                </div>
+                
             </>
         )
     }

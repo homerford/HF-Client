@@ -136,7 +136,7 @@ function Account(props) {
                 {loggedIn && <div className="user-welcome">Welcome back, <b style={{marginLeft: '0.5vmin'}}>{currentUser.User_firstname}</b>!</div>}
                 <div className="login-response-container"><AlertMessage alertMessage={alertMessage}/></div>
             </div>
-            <Loading timeRange={[250, 500]} />
+            <Loading timeRange={[500, 750]} />
         </>
     )
 }

@@ -109,21 +109,22 @@
 }
 
 .slide-image-2 {
-    background-image: url('../images/team-images/tennis4k-2.jpg');
+    background-image: url('../images/team-images/HFBusiness.jpeg');
     background-repeat: no-repeat;
     background-size: cover;
-    background-position: center top;
+    background-position: center bottom;
     width: 100%;
     height: 100%;
 }
 
 .slide-image-3 {
-    background-image: url('../images/team-images/tennis4k-3.jpeg');
+    background-image: url('../images/team-images/HFImage3.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center top;
     width: 100%;
     height: 100%;
+    filter: saturate(2) contrast(1.1);
 }
 
 .main-text-body-button-container {
@@ -320,10 +321,12 @@
     position: absolute;
     width: 5vmin;
     height: 5vmin;
-    left: calc(50% + 2vmin);
+    right: calc(50% - 58vmin);
+    top: 5vmin;
     filter: invert(1) drop-shadow(0 0.25vmin 5px rgba(0,0,0,0.5));
     transition: all 0.15s ease-in-out;
     opacity: 0.5;
+    transform: rotate(90deg);
 }
 
 .image-content-back-button.active {
@@ -335,11 +338,13 @@
     position: absolute;
     width: 5vmin;
     height: 5vmin;
-    left: calc(50% + 2vmin);
+    right: calc(50% - 58vmin);
+    top: 5vmin;
     cursor: pointer;
     filter: invert(1) drop-shadow(0 0.25vmin 5px rgba(0,0,0,0.5));
     transition: all 0.15s ease-in-out;
     opacity: 1;
+    transform: rotate(90deg);
 }
 
 .image-content-next-button {
@@ -352,9 +357,11 @@
     width: 5vmin;
     height: 5vmin;
     right: calc(50% - 58vmin);
+    bottom: 5vmin;
     filter: invert(1) drop-shadow(0 0.25vmin 5px rgba(0,0,0,0.5));
     transition: all 0.15s ease-in-out;
     opacity: 0.5;
+    transform: rotate(90deg);
 }
 
 .image-content-next-button.active {
@@ -367,10 +374,12 @@
     width: 5vmin;
     height: 5vmin;
     right: calc(50% - 58vmin);
+    bottom: 5vmin;
     cursor: pointer;
     filter: invert(1) drop-shadow(0 0.25vmin 5px rgba(0,0,0,0.5));
     transition: all 0.15s ease-in-out;
     opacity: 1;
+    transform: rotate(90deg);
 }
 
 /* Animations */
