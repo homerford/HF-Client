@@ -63,7 +63,7 @@ function Admin(props) {
 
     async function getPieData() {
         let query = `
-            SELECT USER.User_id, COUNT(RESERVATION.Customer_id) AS total_reservations
+            SELECT USER.User_firstname, USER.User_lastname, COUNT(RESERVATION.Customer_id) AS total_reservations
             FROM USER
             JOIN RESERVATION ON USER.User_id = RESERVATION.Customer_id
             GROUP BY USER.User_id
@@ -81,7 +81,7 @@ function Admin(props) {
         
         let converted_chart_data = response.report.map((data, idx) => {
             return {
-                x: `ID: ${data.User_id}`,
+                x: `${data.User_firstname} ${data.User_lastname.substring(0,1)}.`,
                 y: data.total_reservations
             }
         })
@@ -122,11 +122,11 @@ function Admin(props) {
         let query = `
             SELECT date_format(STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y'), '%m/%d/%Y') AS Date, COUNT(RESERVATION.Customer_id) AS Reservations
             FROM RESERVATION
-            WHERE STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y') >= date_format(curdate(), '%m/%e/%Y')
+            WHERE STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y') >= STR_TO_DATE(date_format(curdate(), '%m/%e/%Y'), '%m/%e/%Y')
             AND RESERVATION.Reservation_status = 1
             GROUP BY Date
             ORDER BY Reservations DESC
-            LIMIT 6
+            LIMIT 10
         `;
         let response = await fetch("http://3.218.225.62:3040/report/download", {
             method: "POST",
@@ -256,7 +256,7 @@ function Admin(props) {
                     <div className="container-admin2-content-item-reservations">
                         <div className="container-admin2-content-item-title">Data Reports</div>
                         <div className="container-admin2-content-item-body-report">
-                            <div className="container-report-item">
+                            <div className="container-report-item" style={{height: "25vmin"}}>
                                 {/* Pie Chart - Number of Reservations for each Court over the Past Month */}
                                 <span className="admin2-chart-title">Top 5 Users by Total Reservations</span>
                                 <Charts chartData={pieData} chartType={"pie"}/>
@@ -265,9 +265,9 @@ function Admin(props) {
                                 <span className="admin2-chart-title">Number of Reservations for the Next 7 Days</span>
                                 <Charts chartData={lineData} chartType={"line"}/>
                             </div> */}
-                            <div className="container-report-item">
+                            <div className="container-report-item" style={{height: "25vmin"}}>
                                 {/* Bar Chart - Top 10 users by cumulative reservation duration over the last month */}
-                                <span className="admin2-chart-title">6 Busiest Upcoming Dates <br/>(By Reservation #)</span>
+                                <span className="admin2-chart-title">10 Busiest Upcoming Dates <br/>(By Reservation #)</span>
                                 <Charts chartData={barData} chartType={"bar"}/>
                             </div>
                             <div className="container-report-item-more"

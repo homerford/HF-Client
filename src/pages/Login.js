@@ -51,7 +51,12 @@ function Login(props) {
         })
         .then(response => response.json())
         .then(response => {
-            sendAlertMessage(response.message, "Bad");
+            if(response.message != 'Login Successful!') {
+                sendAlertMessage(response.message, "Bad");
+            }
+            else {
+                sendAlertMessage(response.message, "Good");
+            }
 
             if(response.message == 'Login Successful!') {
                 let responseObj = response[Object.keys(response)[1]];

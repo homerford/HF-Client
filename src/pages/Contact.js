@@ -92,7 +92,7 @@
                         <div className="contact-info">
                             <h2 style={{fontWeight: "bold"}}>How to Reach Us</h2>
                             <p>Phone: 713-842-3460</p>
-                            <p>Address: <a href="https://goo.gl/maps/Q8n6Xyq7nPtuPWWQ6">5225 Calhoun, 77021 Houston TX</a></p>
+                            <p>Address: <a href="https://goo.gl/maps/Q8n6Xyq7nPtuPWWQ6" target="_blank">5225 Calhoun, 77021 Houston TX</a></p>
                             <p>
                                 <span style={{fontWeight: "bold"}}>Hours of operation:</span>
                                 <br/>

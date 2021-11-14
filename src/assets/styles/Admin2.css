@@ -384,8 +384,8 @@
 
 .container-report-item {
     background-color: rgba(0,0,0,0.0);
-    width: 35%;
-    aspect-ratio: 1;
+    width: auto;
+    height: auto;
     border-radius: 1vmin;
     margin-bottom: auto;
     margin-top: 4vmin;

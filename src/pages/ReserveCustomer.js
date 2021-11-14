@@ -1013,7 +1013,7 @@ function ReserveCustomer(props) {
                 <div className="container-option-lite" style={{marginTop: "2vmin"}}>
                     Edit an Existing Reservation
                     <div className="lite-edit-label">
-                        {loggedIn ? "Select your reservation" : "Please login to edit a reservation"}
+                        {customerReservations.length > 0 ? "Select your reservation" : "You haven't made any reservations yet..."}
                     </div>
                     <br/>
                     {renderCustomerReservations()}

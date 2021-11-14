@@ -24,6 +24,7 @@ function Charts(props) {
                 theme={V.VictoryTheme.material}
                 domainPadding={30}
                 animate={{duration: 400, onLoad: {duration: 100}}}
+                width={600}
                 events={[
                     {
                         target: "data",
@@ -46,12 +47,12 @@ function Charts(props) {
                 ]}
             >
                 <V.VictoryAxis
-                    tickValues={[1, 2, 3, 4, 5, 6, 7]}
                     tickFormat={(y) => (`${y.substring(0,y.length-5)}`)}
                 />
                 <V.VictoryAxis
                     dependentAxis
-                    tickFormat={(x) => (`${x}`)}
+                    tickCount={10}
+                    tickFormat={(x) => x}
                 />
                 <V.VictoryBar
                     name="Bar-1"

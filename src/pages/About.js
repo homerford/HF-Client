@@ -109,6 +109,17 @@
                             </div>
                         </div>
                         <div className="bottom-row">
+                            <div 
+                                style={{
+                                    width: "100%",
+                                    fontFamily: "Round",
+                                    fontSize: "2.25vmin",
+                                    marginLeft: "1.5vmin",
+                            
+                                }}
+                            >
+                                FAQ
+                            </div>
                             {faqInfo.map((val, idx) => {
                                 return (
                                     <div className="faq-item-container" key={idx}>
@@ -122,7 +133,7 @@
                     
                     {loggedIn && <div className="user-welcome">Welcome back, <b style={{marginLeft: '0.5vmin'}}>{currentUser.User_firstname}</b>!</div>}
                 </div>
-                <Loading timeRange={[250, 500]} />
+                <Loading timeRange={[500, 750]} />
                 <div className={`fullscreen-modal ${fullscreen ? "active" : ""}`}
                     onClick={() => {
                         setFullscreen(false);

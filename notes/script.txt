@@ -24,3 +24,16 @@ Employee:
 
 
 Admin:
+
+
+CUSTOMER
+1. Login
+2. Create Reserve
+3. Edit Reserve - Bumping timeslot
+4. Delete Reserve
+5. Change Password
+6. Alerts On/Off
+7. Submit Feedback
+
+Admin:
+1. Go over everything except Reservation System Manager

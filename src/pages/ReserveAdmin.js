@@ -63,7 +63,7 @@ function ReserveAdmin(props) {
     const [numCourts, setNumCourts] = useState(1);
     const [selectedDuration, setSelectedDuration] = useState(0.75);
     const [selectedID, setSelectedID] = useState();
-    const [selectedCustomerID, setSelectedCustomerID] = useState(1);
+    const [selectedCustomerID, setSelectedCustomerID] = useState(currentUser.User_id);
     const [reservations, setReservations] = useState([]);
     const [selectedPeople, setSelectedPeople] = useState(1);
     const [selectedEquipment, setSelectedEquipment] = useState({
@@ -528,7 +528,27 @@ function ReserveAdmin(props) {
     async function addClosure(date) {
         let response = await fetch("http://3.218.225.62:3040/closure/add/"+date);
         response = await response.json();
-        fastRefresh()
+
+        let all_reservation_on_date = reservations.filter(res => res.date == date);
+        let all_reservation_customer_ids = all_reservation_on_date.map(res => res.customer_id);
+        let all_users_on_date = userArray.filter(user => all_reservation_customer_ids.includes(user.User_id));
+        let all_users_email_addresses = all_users_on_date.map(user => user.User_email);
+        // console.log(all_users_email_addresses);
+        // all_users_email_addresses.forEach(async email => {
+        //     fetch("http://3.218.225.62:3040/alert/closure/", {
+        //         method: "POST",
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify({
+        //             email: email,
+        //             date: date
+        //         })
+        //     })
+        //     .then(response => setTimeout(() => {} , 2000))
+        //     })
+
+        fastRefresh();
     }
 
     async function removeClosure(date) {
@@ -1287,7 +1307,7 @@ function ReserveAdmin(props) {
         setSelectedDuration(0.75);
         setSelectedID();
         setSelectedType(0);
-        setSelectedCustomerID(1);
+        setSelectedCustomerID(currentUser.User_id);
         setNote('');
         setCurrentArrayCourt([]);
         setNumCourts(1);

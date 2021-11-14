@@ -150,7 +150,7 @@ function Home(props) {
                 {/* Variables can be inserted inside of brackets as shown below */}
                 {newHome()}
             </div>
-            <Loading timeRange={[400, 800]} />
+            <Loading timeRange={[700, 1000]} />
         </>
     )
 }

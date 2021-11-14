@@ -1271,6 +1271,12 @@
     opacity: 100%;
 }
 
+.reserve-select-wrapper {
+    width: auto;
+    background-color: red;
+    height: 10vmin;
+}
+
 /* Animations */
 @keyframes column-item-open-animation {
     0% {

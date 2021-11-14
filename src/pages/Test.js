@@ -469,7 +469,13 @@ function Test(props) {
                         </span>
                         <span className="test-add-text">
                             Type: 
-                            <select className="test-add-select" style={editing ? {color : 'rgba(66, 135, 245, 0.7)'} : {}} value={testType} onChange={(e) => {setTestType(e.target.value)}}>
+                            <select 
+                                className="test-add-select" 
+                                style={editing ? {color : 'rgba(66, 135, 245, 0.7)'} : {}} 
+                                value={testType} 
+                                onChange={(e) => {setTestType(e.target.value)}}
+                                disabled={(currentUser.User_type == 2) ? false : true}
+                            >
                                 <option value="0">Customer</option>
                                 <option value="1">Employee</option>
                                 <option value="2">Administrator</option>

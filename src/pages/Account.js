@@ -102,7 +102,24 @@ function Account(props) {
                                 {currentUser.User_type == 2 ? "Administrator" : currentUser.User_type == 1 ? "Employee" : "Customer"}
                             </div>
                             <div className="account-info-item" style={{opacity: '65%', fontSize: '2.5vmin', marginLeft: '5vmin'}}>
-                                {currentUser.User_status == 1 ? "Verified" : currentUser.User_status == 0 ? "Inactive" : "Pending"}
+                                {currentUser.User_status == 1 ? "Verified Account" : currentUser.User_status == 0 ? "Account Inactive" : "Account Pending"}
+                            </div>
+                            <div className="account-info-item" 
+                                style={{
+                                    opacity: '40%', 
+                                    fontSize: '1.25vmin', 
+                                    marginLeft: '1.5vmin', 
+                                    marginRight: 'auto',
+                                    backgroundColor: "transparent",
+                                    width: '25vmin',
+                                    height: '6vmin',
+                                    boxShadow: "0px 3px 5px 0px rgba(0,0,0,0.0)",
+                                    borderRadius: "1vmin",
+                                    padding: "1vmin",
+                                    color: "red"
+                                }}
+                            >
+                                Please call or email us to update your account information!
                             </div>
                             <div className="account-info-item" style={{marginLeft: '4vmin', marginTop: "auto"}}>
                                 <span className="account-password-reset-btn active" style={{width: "25vmin"}}
@@ -120,9 +137,9 @@ function Account(props) {
                         </div>
                         <div className="account-img" />
                     </div>
-                    <div className="account-column-title">Reservation History</div>
+                    <div className="account-column-title">Reservation Overview</div>
                     <div className="account-column">
-                        {userReservations.map((res, index) => {
+                        {userReservations.length > 0 && userReservations.map((res, index) => {
                             return (
                                 <Link to="/reserve" className="account-column-item" key={index}>
                                     <span>{res.Reservation_date}</span>
@@ -131,6 +148,20 @@ function Account(props) {
                                 </Link>
                             )
                         })}
+                        {userReservations.length == 0 && 
+                            <div className="account-column-item"
+                                style={{
+                                    backgroundColor: "rgba(245, 158, 66, 0.0)",
+                                    boxShadow: 'none',
+                                    backgroundImage: "none",
+                                    width: "100%",
+                                    padding: "0.25vmin",
+                                    border: 'none'
+                                }}
+                            >
+                                <span>You haven't made any reservations yet...</span>
+                            </div>
+                        }
                     </div>
                 </div>
                 {loggedIn && <div className="user-welcome">Welcome back, <b style={{marginLeft: '0.5vmin'}}>{currentUser.User_firstname}</b>!</div>}

@@ -26,10 +26,16 @@ function Reports() {
             description: `This report shows all future special event reservations that have been made.`,
             category: `Reservation`,
             query: `
-                SELECT USER.User_email, date_format(STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y'), '%m/%e/%Y') AS Date, RESERVATION.Reservation_time, RESERVATION.Reservation_duration, RESERVATION.Reservation_note
+                SELECT 
+                    USER.User_email, 
+                    date_format(STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y'), '%m/%e/%Y') AS Date, 
+                    RESERVATION.Reservation_time AS Start_Time, 
+                    RESERVATION.Reservation_duration AS Duration_Hours, 
+                    RESERVATION.Reservation_note AS Note
                 FROM RESERVATION
                 JOIN USER ON USER.User_id = RESERVATION.Customer_id
                 WHERE Reservation_type = 1
+                AND STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y') >= STR_TO_DATE(date_format(curdate(), '%m/%e/%Y'), '%m/%e/%Y')
                 AND RESERVATION.Reservation_status = 1
                 ORDER BY UNIX_TIMESTAMP(STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y')) ASC
             `,
@@ -39,10 +45,10 @@ function Reports() {
             description: `This report will show the number of customer reservations at the end of the day`,
             category: `Reservation`,
             query: `
-                SELECT USER.User_firstname, USER.User_lastname, USER.User_phone, RESERVATION.Reservation_time, date_format(NOW() - INTERVAL 1 DAY, '%m/%e/%Y') AS Date
+                SELECT USER.User_firstname, USER.User_lastname, USER.User_phone, RESERVATION.Reservation_time, date_format(NOW(), '%m/%e/%Y') AS Date
                 FROM RESERVATION
                 JOIN USER ON USER.User_id = RESERVATION.Customer_id
-                WHERE RESERVATION.Reservation_date = date_format(NOW() - INTERVAL 1 DAY, '%m/%e/%Y')
+                WHERE RESERVATION.Reservation_date = date_format(NOW(), '%m/%e/%Y')
                 AND RESERVATION.Reservation_status = 1
             `,
         },
@@ -53,7 +59,7 @@ function Reports() {
             query: `
                 SELECT date_format(STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y'), '%m/%d/%Y') AS Date, COUNT(RESERVATION.Customer_id) AS Todays_Reservations
                 FROM RESERVATION
-                WHERE STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y') >= date_format(curdate(), '%m/%e/%Y')
+                WHERE STR_TO_DATE(RESERVATION.Reservation_date, '%m/%e/%Y') >= STR_TO_DATE(date_format(curdate(), '%m/%e/%Y'), '%m/%e/%Y')
                 AND RESERVATION.Reservation_status = 1
                 GROUP BY Date
                 ORDER BY Date ASC
@@ -79,10 +85,15 @@ function Reports() {
             description: `All active employees in the database system`,
             category: `User`,
             query: `
-                SELECT User_id, User_email, User_firstname, User_lastname, User_type, User_status
+                SELECT 
+                    User_id, 
+                    User_email, 
+                    User_firstname, 
+                    User_lastname, 
+                    IF(User_type = '0', 'Customer', IF(User_type = '1', 'Employee', 'Manager')) AS Employee_Type
                 FROM USER
-                WHERE User_type = 1 
-                OR User_type = 2
+                WHERE User_type = 1
+                OR User_type  = 2
                 AND User_status = 1
                 ORDER BY User_id DESC
             `,
@@ -92,7 +103,12 @@ function Reports() {
             description: `All active customers in the database system`,
             category: `User`,
             query: `
-                SELECT User_id, User_email, User_firstname, User_lastname, User_type, User_status
+                SELECT 
+                    User_id, 
+                    User_email, 
+                    User_firstname, 
+                    User_lastname, 
+                    IF(User_type = '0', 'Customer', IF(User_type = '1', 'Employee', 'Manager')) AS Employee_Type
                 FROM USER
                 WHERE User_type = 0 
                 AND User_status = 1
@@ -108,6 +124,8 @@ function Reports() {
                     User_email AS Email
                 FROM USER
                 WHERE User_getAnnouncements = 1
+                AND User_type = 0
+                AND User_status = 1
                 ORDER BY User_email ASC
             `,
         },
@@ -187,6 +205,23 @@ function Reports() {
             `,
         },
         {
+            title: `Positive Feedback Received`,
+            description: `This report will show all positive feedback received, ordered by most recent.`,
+            category: `Feedback`,
+            query: `
+                SELECT 
+                    date_format(STR_TO_DATE(Feedback_date, '%m/%e/%Y'), '%m/%d/%Y') AS Date,
+                    IF(Feedback_rating = '3', 'Good', 'Great') AS Rating,
+                    IF(Feedback_type = '0', 'Staff', IF(Feedback_type = '1', 'Court', IF(Feedback_type = '2', 'Facility', IF(Feedback_type = '3', 'Suggestion', IF(Feedback_type = '4', 'Website', 'Other'))))) AS Category,
+                    USER.User_email AS Email,
+                    Feedback_note AS Note
+                FROM FEEDBACK
+                JOIN USER ON USER.User_id = FEEDBACK.Customer_id
+                WHERE Feedback_rating > 2
+                ORDER BY UNIX_TIMESTAMP(STR_TO_DATE(Feedback_date, '%m/%e/%Y')) ASC
+            `,
+        },
+        {
             title: `Staff Complaints Received`,
             description: `This report will show all complaints made about the staff.`,
             category: `Feedback`,
@@ -234,7 +269,7 @@ function Reports() {
             query: `
                 SELECT CLOSURE.Closure_id, date_format(STR_TO_DATE(CLOSURE.Closure_date, '%m/%e/%Y'), '%m/%d/%Y') AS Date
                 FROM CLOSURE
-                WHERE STR_TO_DATE(CLOSURE.Closure_date, '%m/%e/%Y') >= date_format(curdate(), '%m/%e/%Y')
+                WHERE STR_TO_DATE(CLOSURE.Closure_date, '%m/%e/%Y') >= STR_TO_DATE(date_format(curdate(), '%m/%e/%Y'), '%m/%e/%Y')
                 ORDER BY UNIX_TIMESTAMP(STR_TO_DATE(CLOSURE.Closure_date, '%m/%e/%Y')) ASC
             `,
         },
@@ -245,8 +280,25 @@ function Reports() {
             query: `
                 SELECT CLOSURE.Closure_id, date_format(STR_TO_DATE(CLOSURE.Closure_date, '%m/%e/%Y'), '%m/%d/%Y') AS Date
                 FROM CLOSURE
-                WHERE STR_TO_DATE(CLOSURE.Closure_date, '%m/%e/%Y') < NOW() - INTERVAL 1 DAY
+                WHERE STR_TO_DATE(CLOSURE.Closure_date, '%m/%e/%Y') < STR_TO_DATE(date_format(curdate(), '%m/%e/%Y'), '%m/%e/%Y')
                 ORDER BY UNIX_TIMESTAMP(STR_TO_DATE(CLOSURE.Closure_date, '%m/%e/%Y')) ASC
+            `,
+        },
+        {
+            title: `Closure Affected Reservations`,
+            description: `Existing reservations that will affected by upcoming closures`,
+            category: `Closure`,
+            query: `
+                SELECT 
+                    date_format(STR_TO_DATE(CLOSURE.Closure_date, '%m/%e/%Y'), '%m/%d/%Y') AS Date,
+                    RESERVATION.Reservation_id AS Reservation_id,
+                    RESERVATION.Reservation_time AS Reservation_time,
+                    USER.User_email AS Email
+                FROM CLOSURE
+                    JOIN RESERVATION ON RESERVATION.Reservation_date = CLOSURE.Closure_date
+                    JOIN USER ON USER.User_id = RESERVATION.Customer_id
+                    WHERE STR_TO_DATE(CLOSURE.Closure_date, '%m/%e/%Y') >= STR_TO_DATE(date_format(curdate(), '%m/%e/%Y'), '%m/%e/%Y')
+                    ORDER BY UNIX_TIMESTAMP(STR_TO_DATE(CLOSURE.Closure_date, '%m/%e/%Y')) ASC
             `,
         },
     ]
@@ -258,9 +310,15 @@ function Reports() {
             category: `Equipment`,
             query: `
                 SELECT 
-                    Reservation_id, Reservation_date AS Date, Reservation_time AS Start_Time, Reservation_duration AS Duration_Hours
+                    Reservation_id, 
+                    Reservation_date AS Date, 
+                    Reservation_time AS Start_Time, 
+                    Reservation_duration AS Duration_Hours,
+                    USER.User_email AS Customer
                 FROM RESERVATION
+                JOIN USER ON USER.User_id = RESERVATION.Customer_id
                 WHERE JSON_CONTAINS(Equipment_id, '0') = 1
+                AND Reservation_status = 1
             `,
         },
         {
@@ -269,9 +327,15 @@ function Reports() {
             category: `Equipment`,
             query: `
                 SELECT 
-                    Reservation_id, Reservation_date AS Date, Reservation_time AS Start_Time, Reservation_duration AS Duration_Hours
+                    Reservation_id, 
+                    Reservation_date AS Date, 
+                    Reservation_time AS Start_Time, 
+                    Reservation_duration AS Duration_Hours,
+                    USER.User_email AS Customer
                 FROM RESERVATION
+                JOIN USER ON USER.User_id = RESERVATION.Customer_id
                 WHERE JSON_CONTAINS(Equipment_id, '1') = 1
+                AND Reservation_status = 1
             `,
         },
         {
@@ -280,9 +344,15 @@ function Reports() {
             category: `Equipment`,
             query: `
                 SELECT 
-                    Reservation_id, Reservation_date AS Date, Reservation_time AS Start_Time, Reservation_duration AS Duration_Hours
+                    Reservation_id, 
+                    Reservation_date AS Date, 
+                    Reservation_time AS Start_Time, 
+                    Reservation_duration AS Duration_Hours,
+                    USER.User_email AS Customer
                 FROM RESERVATION
+                JOIN USER ON USER.User_id = RESERVATION.Customer_id
                 WHERE JSON_CONTAINS(Equipment_id, '2') = 1
+                AND Reservation_status = 1
             `,
         },
     ]
