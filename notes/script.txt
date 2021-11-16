@@ -1,39 +1,58 @@
-Pre:
-    1. Media carousel to give visitors an idea of what they type of facilities that are available.
-    2. Quick and easily accessible information about what our system offers.
-    3. Quick-access buttons to commonly used features on the application.
-
-Customer: 
-    1. Before signing up, a potential customer might want to know a little bit more about the tennis 
-       courts. (Go to ABOUT page)
-
-    2. An existing customer will know that this page is where they can find the tennis court number that 
-       they'll be playing on.
-
-    3. When a customer decides that they want to book a reservation with the tennis court, they'll 
-       need to create an account so that the reservation can be tracked and maintained by the system.
-
-    4. The customer will first need to click the 'Login' button to register for an account. Once they've
-       created an account with valid information, they'll need to verify their email address by clicking
-       the link in the email they receive from our system.
-
-    5. Once they've verified their email address, they'll be able to log in to their account and make a 
-       reservation by clicking the 'Reserve' button.
-
-Employee:
+CUSTOMER:
+_____________________________________________________________________________________________________
+1. Login/Register (Show verification email after registration)
+2. Reserve - Create 2 Reservations(11/19 10:00am, 11/20 9:00am(make a note that asks for a court that's close to the entrance))
+3. Reserve - Edit Reserve
+4. Reserve - Delete 1 Reservation(11/19, 10:00am)
+5. About - Maps
+6. About - FAQ
+7. Account - Alerts On/Off
+8. Account - Change Password
+9. Contact Page
+10. Submit Bad Feedback
 
 
 Admin:
+_____________________________________________________________________________________________________
+1. Start with Reservation System Manager
+2. Explain the color system, court numbers, and week changing options
+3. Go to Court 7 to show Daniels reservation
+4. Change some items on Daniels reservation and reschedule him to court 11(closer to entrance)
+5. Go back to current week and ask Daniel to create another reservation at 11/17, 1:00pm, duration 1hr
+6. Show that reservations will be updated in real-time to prevent reservation conflicts
+7. Show a reservation that's requested in the future(12/6) can be made
+8. Show that a date can be closed(close 12/10 because "The facility will be having pest control come out that day")
+9. Go back to Manage page
 
+_____________________________________________________________________________________________________
+10. Explain that Users are listed in the top right, then select a user to edit(moores@yahoo.com)
+11. Select moores@yahoo.com
+12. Change her first name to Susan, and account type to employee("She just got hired")
+12b. Explain that only Managers can update account types and status or delete data, so when Susan 
+     accesses this page as an employee, she won't see the delete button or be able to 
+     access the user status/user type dropdowns.
+13. Go back to Manage page
 
-CUSTOMER
-1. Login
-2. Create Reserve
-3. Edit Reserve - Bumping timeslot
-4. Delete Reserve
-5. Change Password
-6. Alerts On/Off
-7. Submit Feedback
+_____________________________________________________________________________________________________
+14. Explain the report charts on the top left
+15. Then go to the Reports page
+16. Explain that Homer Ford Tennis Center employees currently need to count the number 
+    of courts reserved for each month by adding up all the courts reserved for each month.
+17. Explain that now they can simply click on the 'Number of Courts Used this Month' report
+    to get those numbers.
+18. They can also get the number of courts used for the year.(click the Number of Courts Used This Year report)
+19. "Let's look at another report"
+20. Show the Closure Affected Reservations report. Explain that it shows the number of reservations
+    that are affected by a date closure, and that we'll need to reach out to that user to update them about their reservation.
+21. Go back to Manage page
 
-Admin:
-1. Go over everything except Reservation System Manager
+_____________________________________________________________________________________________________
+22. "Lastly, let's go over the feedback section in the bottom-left."
+23. "We can see that daniel left some extremely crude feedback just now. He also assualted another paying customer 
+     during his reservation, so we're going to need to ban his account."
+24. "Luckily, because our system updates most data in real-time, we can ban him right away, and prevent him making any 
+     more reservations or changing any more data. Even if he's currently logged into the system."
+25. Have Daniel share his screen.
+26. Wait until his screen appears, then delete his account and show that it automatically logs him out.
+27. Show that he can't log back in.
+28. "Well, that's about it for our demo. Thank y'all for watching, and we'll now move over to QA."

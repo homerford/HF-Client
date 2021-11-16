@@ -421,14 +421,14 @@ function Login(props) {
                             </div>
                             <div className="register-input-container" style={{height: '5vmin'}}>
                                 <span className="register-input-label">Password: </span>
-                                <input className="register-input"
+                                <input type="password" className="register-input"
 
                                 />
                                 <div className="register-input-tip-container" style={{ fontSize: '1vmin'}}>At least one: special character, number, uppercase letter, and lowercase letter. Minimum 8 characters. Maximum 20 characters.</div>
                             </div>
                             <div className="register-input-container" style={{height: '5vmin'}}>
                                 <span className="register-input-label" style={{ fontSize: '1.5vmin' }}>Confirm&nbsp;Password: </span>
-                                <input className="register-input"
+                                <input type="password" className="register-input"
 
                                 />
                                 <div className="register-input-tip-container">Must match the password entered above.</div>
