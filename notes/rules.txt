@@ -1,37 +1,32 @@
+Defaults Password: P@ssw0rd
+__________________________________________________________________________________________________________
 Equipment:
 
 Reservations:
 
 Alerts:
-
+    1. SMS 
 Login:
-    --Redirect appropriately if user is not logged in.
 
 Admin:
 
 Reports:
 
 Account:
-    Business pics
 
 Contact:
 
-Documentation:
-    1. Combine System architecture diagram & Network architecture diagram
-    2. Infrastructure diagram (local -> github -> aws)
-    3. Table descriptions(short)
-    4. Post-project operation document(AWS Controls)
-    5. Simple User Manual(App Controls)
+__________________________________________________________________________________________________________
 
-Questions for Professor:
-    DONE Do we need to account for cascade deletes/updates in data dictionary? No.
-    
-Overall To-do:
-    1. DOMAIN NAME!!!
-    2. Combine System architecture diagram & Network architecture diagram
-    3. Infrastructure diagram (local -> github -> aws)
+Questions:
+1. Should we switch back to actual deletes? It would save space and be easier to manage. (Yes)
+2. How should we split a reservation?
+3. Payments? Stripe.
 
-Defaults Password: P@ssw0rd
 
-Be able to explain future production environment. This is where we could talk about implementing SMS notifications.
-Apps go in separate zip file than the project management stuff.
+AWS:
+1. Create an account
+2. Purchase two node instances through lightsail
+   2a. 2GB RAM, 1vCPU, 60GB SSD (Node Instance) - Server
+   2b. 4GB RAM, 2vCPU, 80GB SSD (Node Instance) - Client
+3. 
