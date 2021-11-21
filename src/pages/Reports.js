@@ -4,15 +4,10 @@ import '../assets/styles/Reports.css';
 import React, { useEffect, useRef, useState } from "react";
 
 // Importing 3rd Party Dependencies
-import ReactExport from "react-export-excel";
 import { saveAs } from 'file-saver';
 
 // Importing the components used in this page
 import Loading from '../components/Loading';
-
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function Reports() {
     const [reportModalOpen, setReportModalOpen] = useState(false);
