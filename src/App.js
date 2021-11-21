@@ -31,7 +31,7 @@ import socketIOClient from "socket.io-client";
 // Importing common files used in react
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 
-const socket_ip = "http://3.218.225.62:4001";
+const socket_ip = "https://cors-everywhere.herokuapp.com/http://3.218.225.62:4001";
 const socket = socketIOClient(socket_ip);
 
 // Root application function
