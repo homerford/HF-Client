@@ -48,7 +48,7 @@
     align-items: center;
     transition: all 0.4 ease-in-out;
     transform: translateY(0vmin);
-    opacity: 100%;
+    opacity: 1;
     animation: login-window-animation 0.4s ease-in-out;
 }
 
@@ -219,7 +219,7 @@
     align-items: center;
     transition: all 0.4 ease-in-out;
     transform: translateY(0vmin);
-    opacity: 100%;
+    opacity: 1;
 }
 
 .register-window-head {
@@ -376,7 +376,7 @@
 }
 
 .register-input-container:hover > .register-input-tip-container {
-    opacity: 100%;
+    opacity: 1;
     transform: translateX(0vmin);
 }
 
@@ -431,14 +431,14 @@
     }
     100% {
         transform: translateY(0vmin);
-        opacity: 100%;
+        opacity: 1;
     }
 }
 
 @keyframes login-window-animation-reverse {
     0% {
         transform: translateY(0vmin);
-        opacity: 100%;
+        opacity: 1;
     }
     100% {
         transform: translateY(70vmin);
@@ -453,14 +453,14 @@
     }
     100% {
         transform: translateY(0vmin);
-        opacity: 100%;
+        opacity: 1;
     }
 }
 
 @keyframes register-window-animation-reverse {
     0% {
         transform: translateY(0vmin);
-        opacity: 100%;
+        opacity: 1;
     }
     100% {
         transform: translateY(70vmin);
