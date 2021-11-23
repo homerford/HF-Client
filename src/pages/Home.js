@@ -90,7 +90,7 @@ function Home(props) {
                     </div>
                     <div className="main-image-panel">
                         <div className="home-image-content">
-                            <div className="player-wrapper">
+                            {/* <div className="player-wrapper">
                                 <ReactPlayer 
                                     playing={true}
                                     playbackRate={1}
@@ -101,7 +101,8 @@ function Home(props) {
                                     height={'100%'}
                                     className="react-player"
                                 />
-                            </div>
+                            </div> */}
+                            <div className="slide-image-1"></div>
                             <div className="slide-image-2"></div>
                             <div className="slide-image-3"></div>
                         </div>

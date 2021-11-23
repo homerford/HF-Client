@@ -42,7 +42,7 @@ function Login(props) {
             return;
         }
 
-        fetch("http://3.218.225.62:3040/user/login", {
+        fetch("http://52.4.223.125:3040/user/login", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -205,7 +205,7 @@ function Login(props) {
                 getannouncements: formdata.announcements
             }
 
-            fetch("http://3.218.225.62:3040/user/add", {
+            fetch("http://52.4.223.125:3040/user/add", {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
@@ -237,7 +237,7 @@ function Login(props) {
     }
 
     async function sendVerifcationEmail(email) {
-        let response = await fetch("http://3.218.225.62:3040/email/send-verification/"+email);
+        let response = await fetch("http://52.4.223.125:3040/email/send-verification/"+email);
         console.log(response);
     }
 
@@ -293,7 +293,7 @@ function Login(props) {
     }
 
     async function handleSendPasswordReset(email) {
-        let response = await fetch("http://3.218.225.62:3040/email/reset-password/"+email);
+        let response = await fetch("http://52.4.223.125:3040/email/reset-password/"+email);
         console.log(response);
         sendAlertMessage("Password reset email sent!", "Good");
     }

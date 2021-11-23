@@ -354,7 +354,7 @@ function Reports() {
 
     // API functions
     async function reportDownload(query, category, title) {
-        let response = await fetch("http://3.218.225.62:3040/report/download", {
+        let response = await fetch("http://52.4.223.125:3040/report/download", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -366,7 +366,7 @@ function Reports() {
     }
 
     async function reportOpen(query, category, title) {
-        let response = await fetch("http://3.218.225.62:3040/report/download", {
+        let response = await fetch("http://52.4.223.125:3040/report/download", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',

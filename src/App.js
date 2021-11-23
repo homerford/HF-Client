@@ -31,7 +31,7 @@ import socketIOClient from "socket.io-client";
 // Importing common files used in react
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 
-const socket_ip = "http://3.218.225.62:4001";
+const socket_ip = "http://52.4.223.125:4001";
 const socket = socketIOClient(socket_ip);
 
 // Root application function
@@ -65,7 +65,7 @@ function App() {
       <div>
         {!isMobile && <nav className="app-navigation-new" id="navbar">
           {/* Visible link elements to different pages */}
-          <Link className="route-link-title" to="/">🎾 Homer Ford <div className="title-tint-text">Tennis Center</div></Link>
+          <Link className="route-link-title" to="/">🎾 <div className="title-tint-text-1">Homer Ford</div> <div className="title-tint-text-2">Tennis Center</div></Link>
           <div className="new-menu-container">
             <Link className="new-route-link-menu" to="/">Home</Link>
             <Link className="new-route-link-menu" to="/about">About</Link>

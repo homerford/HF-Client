@@ -65,7 +65,7 @@ function Test(props) {
 
     // Get data functions
     async function getTestData() {
-        let response = await fetch("http://3.218.225.62:3040/user/getall");
+        let response = await fetch("http://52.4.223.125:3040/user/getall");
         response = await response.json();
         testDataRaw = response[Object.keys(response)[1]].reverse();
         testDataConverted = [];
@@ -149,7 +149,7 @@ function Test(props) {
     }
 
     function addUser(data) {
-        fetch("http://3.218.225.62:3040/user/add", {
+        fetch("http://52.4.223.125:3040/user/add", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -170,7 +170,7 @@ function Test(props) {
     }
 
     function editUser(data) {
-        fetch("http://3.218.225.62:3040/user/edit", {
+        fetch("http://52.4.223.125:3040/user/edit", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -192,7 +192,7 @@ function Test(props) {
     }
 
     function deleteUser(data) {
-        fetch("http://3.218.225.62:3040/user/delete", {
+        fetch("http://52.4.223.125:3040/user/delete", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',

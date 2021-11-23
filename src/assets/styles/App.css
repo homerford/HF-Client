@@ -18,7 +18,7 @@
     background-color: rgba(255,0,0,0.0);
     position: absolute;
     right: 0;
-    width: 70vmin;
+    width: 60vmin;
     height: 7vmin;
     display: flex;
     flex-direction: row;
@@ -79,7 +79,7 @@
 .new-route-link-menu {
     background-color: rgba(255,255,255,0);
     padding: 1vmin;
-    margin-right: 1vmin;
+    margin-right: 0.25vmin;
     border-radius: 0.5vmin;
     box-shadow: 0px 4px 4px 2px rgba(0,0,0,0.0);
     text-decoration: none;
@@ -156,14 +156,14 @@
     background-color: rgba(80, 172, 95, 0.0);
     padding: 1vmin;
     margin-left: -6.5vmin;
-    margin-bottom: 1vmin;
+    margin-bottom: 0.25vmin;
     border-radius: 0.5vmin;
     box-shadow: inset 0px 4px 4px 2px rgba(0,0,0,0.00);
     text-decoration: none;
     font-weight: 800;
     font-family: Round;
     font-size: 2.5vmin;
-    color: rgb(85, 231, 109);
+    color: rgba(0, 0, 0, 0.5);
     width: 50vmin;
     height: 1.5vmin;
     text-align: center;
@@ -173,7 +173,13 @@
     transition: all 0.15s linear;
 }
 
-.title-tint-text {
+.title-tint-text-1 {
+    color: rgb(85, 231, 109);
+    margin-left: 1vmin;
+    margin-top: 0.0vmin;
+}
+
+.title-tint-text-2 {
     color: rgb(178, 235, 46);
     margin-left: 1vmin;
     margin-top: 0.0vmin;

@@ -38,7 +38,7 @@
 
         async function handleSubmitFeedback() {
             if (feedbackNote.length > 0) {
-                fetch("http://3.218.225.62:3040/feedback/add/", {
+                fetch("http://52.4.223.125:3040/feedback/add/", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"

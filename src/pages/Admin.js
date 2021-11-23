@@ -70,7 +70,7 @@ function Admin(props) {
             ORDER BY total_reservations DESC
             LIMIT 5
         `;
-        let response = await fetch("http://3.218.225.62:3040/report/download", {
+        let response = await fetch("http://52.4.223.125:3040/report/download", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ function Admin(props) {
     //         GROUP BY Date
     //         LIMIT 7
     //     `;
-    //     let response = await fetch("http://3.218.225.62:3040/report/download", {
+    //     let response = await fetch("http://52.4.223.125:3040/report/download", {
     //         method: "POST",
     //         headers: {
     //             'Content-Type': 'application/json',
@@ -128,7 +128,7 @@ function Admin(props) {
             ORDER BY Reservations DESC
             LIMIT 10
         `;
-        let response = await fetch("http://3.218.225.62:3040/report/download", {
+        let response = await fetch("http://52.4.223.125:3040/report/download", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -172,14 +172,14 @@ function Admin(props) {
     // Server functions
     async function getFeedback() {
         setFeedbackListFinal(["Loading..."]);
-        let response = await fetch("http://3.218.225.62:3040/feedback/getall");
+        let response = await fetch("http://52.4.223.125:3040/feedback/getall");
         response = await response.json();
         setFeedbackListFinal(response.items);
         // setFeedbackListFinal(response.files);
     }
 
     async function getUsers() {
-        let response = await fetch("http://3.218.225.62:3040/user/getall");
+        let response = await fetch("http://52.4.223.125:3040/user/getall");
         response = await response.json();
         setUserListFinal(response.users);
     }
@@ -258,8 +258,8 @@ function Admin(props) {
                         <div className="container-admin2-content-item-body-report">
                             <div className="container-report-item" style={{height: "25vmin"}}>
                                 {/* Pie Chart - Number of Reservations for each Court over the Past Month */}
-                                <span className="admin2-chart-title">Top 5 Users by Total Reservations</span>
-                                <Charts chartData={pieData} chartType={"pie"}/>
+                                {/* <span className="admin2-chart-title">Top 5 Users by Total Reservations</span> */}
+                                {/* <Charts chartData={pieData} chartType={"pie"}/> */}
                             </div>
                             {/* <div className="container-report-item">
                                 <span className="admin2-chart-title">Number of Reservations for the Next 7 Days</span>
@@ -267,8 +267,8 @@ function Admin(props) {
                             </div> */}
                             <div className="container-report-item" style={{height: "25vmin"}}>
                                 {/* Bar Chart - Top 10 users by cumulative reservation duration over the last month */}
-                                <span className="admin2-chart-title">10 Busiest Upcoming Dates <br/>(By Reservation #)</span>
-                                <Charts chartData={barData} chartType={"bar"}/>
+                                {/* <span className="admin2-chart-title">10 Busiest Upcoming Dates <br/>(By Reservation #)</span> */}
+                                {/* <Charts chartData={barData} chartType={"bar"}/> */}
                             </div>
                             <div className="container-report-item-more"
                                 onClick={() => {

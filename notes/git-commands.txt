@@ -2,7 +2,7 @@
 git add .
 
 // Commit local repo with message
-git commit -m "Public Test 2"
+git commit -m "first commit"
 
 // Push to remote repo
 git push -u origin main
@@ -15,4 +15,4 @@ git fetch origin master
 git reset --hard FETCH_HEAD
 git clean -df
 
-git remote set-url origin https://github.com/colekuivenhoven/HFTennisCenter.git
+git remote set-url origin https://github.com/homerford/HF-Client.git

@@ -488,7 +488,7 @@ function ReserveAdmin(props) {
 
     // Server functions
     async function getReservationData() {
-        let response = await fetch("http://3.218.225.62:3040/reservation/getall");
+        let response = await fetch("http://52.4.223.125:3040/reservation/getall");
         response = await response.json();
         resArray = response.reservations;
         resBuffer = [];
@@ -500,13 +500,13 @@ function ReserveAdmin(props) {
     }
 
     async function getAllUsers() {
-        let response = await fetch("http://3.218.225.62:3040/user/getall");
+        let response = await fetch("http://52.4.223.125:3040/user/getall");
         response = await response.json();
         setUserArray(response.users);
     }
 
     async function getAllClosures() {
-        let response = await fetch("http://3.218.225.62:3040/closure/getall");
+        let response = await fetch("http://52.4.223.125:3040/closure/getall");
         response = await response.json();
         // setClosures(response.closures);
 
@@ -526,7 +526,7 @@ function ReserveAdmin(props) {
     }
 
     async function addClosure(date) {
-        let response = await fetch("http://3.218.225.62:3040/closure/add/"+date);
+        let response = await fetch("http://52.4.223.125:3040/closure/add/"+date);
         response = await response.json();
 
         let all_reservation_on_date = reservations.filter(res => res.date == date);
@@ -535,7 +535,7 @@ function ReserveAdmin(props) {
         let all_users_email_addresses = all_users_on_date.map(user => user.User_email);
         // console.log(all_users_email_addresses);
         // all_users_email_addresses.forEach(async email => {
-        //     fetch("http://3.218.225.62:3040/alert/closure/", {
+        //     fetch("http://52.4.223.125:3040/alert/closure/", {
         //         method: "POST",
         //         headers: {
         //             'Content-Type': 'application/json',
@@ -552,7 +552,7 @@ function ReserveAdmin(props) {
     }
 
     async function removeClosure(date) {
-        let response = await fetch("http://3.218.225.62:3040/closure/remove/"+date);
+        let response = await fetch("http://52.4.223.125:3040/closure/remove/"+date);
         response = await response.json();
         fastRefresh()
     }
@@ -580,7 +580,7 @@ function ReserveAdmin(props) {
     }
 
     function addReservation(data) {
-        fetch("http://3.218.225.62:3040/reservation/add", {
+        fetch("http://52.4.223.125:3040/reservation/add", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -604,7 +604,7 @@ function ReserveAdmin(props) {
             }
 
             if(user.User_getAnnouncements != 0) {
-                fetch("http://3.218.225.62:3040/alert/send/", {
+                fetch("http://52.4.223.125:3040/alert/send/", {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json',
@@ -619,7 +619,7 @@ function ReserveAdmin(props) {
     }
 
     function editReservation(data) {
-        fetch("http://3.218.225.62:3040/reservation/edit", {
+        fetch("http://52.4.223.125:3040/reservation/edit", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -643,7 +643,7 @@ function ReserveAdmin(props) {
             }
 
             if(user.User_getAnnouncements != 0) {
-                fetch("http://3.218.225.62:3040/alert/edit/", {
+                fetch("http://52.4.223.125:3040/alert/edit/", {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json',
@@ -658,7 +658,7 @@ function ReserveAdmin(props) {
     }
 
     function deleteReservation(rid) {
-        fetch("http://3.218.225.62:3040/reservation/delete", {
+        fetch("http://52.4.223.125:3040/reservation/delete", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -681,7 +681,7 @@ function ReserveAdmin(props) {
             }
 
             if(user.User_getAnnouncements != 0) {
-                fetch("http://3.218.225.62:3040/alert/delete/", {
+                fetch("http://52.4.223.125:3040/alert/delete/", {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json',

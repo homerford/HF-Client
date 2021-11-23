@@ -422,7 +422,7 @@ function ReserveCustomer(props) {
 
     // Server functions
     async function getReservationData() {
-        let response = await fetch("http://3.218.225.62:3040/reservation/getall");
+        let response = await fetch("http://52.4.223.125:3040/reservation/getall");
         response = await response.json();
         resArray = response.reservations;
         resBuffer = [];
@@ -433,19 +433,19 @@ function ReserveCustomer(props) {
     }
 
     async function getCustomerReservationData() {
-        let response = await fetch("http://3.218.225.62:3040/reservation/get-user/"+currentUser.User_id);
+        let response = await fetch("http://52.4.223.125:3040/reservation/get-user/"+currentUser.User_id);
         response = await response.json();
         setCustomerReservations(response.reservations);
     }
 
     async function getAllUsers() {
-        let response = await fetch("http://3.218.225.62:3040/user/getall");
+        let response = await fetch("http://52.4.223.125:3040/user/getall");
         response = await response.json();
         setUserArray(response.users);
     }
 
     async function getAllClosures() {
-        let response = await fetch("http://3.218.225.62:3040/closure/getall");
+        let response = await fetch("http://52.4.223.125:3040/closure/getall");
         response = await response.json();
         // setClosures(response.closures);
 
@@ -488,7 +488,7 @@ function ReserveCustomer(props) {
     }
 
     function addReservation(data) {
-        fetch("http://3.218.225.62:3040/reservation/add", {
+        fetch("http://52.4.223.125:3040/reservation/add", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -511,7 +511,7 @@ function ReserveCustomer(props) {
             }
 
             if(currentUser.User_getAnnouncements != 0) {
-                fetch("http://3.218.225.62:3040/alert/send/", {
+                fetch("http://52.4.223.125:3040/alert/send/", {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json',
@@ -526,7 +526,7 @@ function ReserveCustomer(props) {
     }
 
     function editReservation(data) {
-        fetch("http://3.218.225.62:3040/reservation/edit", {
+        fetch("http://52.4.223.125:3040/reservation/edit", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -549,7 +549,7 @@ function ReserveCustomer(props) {
             }
 
             if(currentUser.User_getAnnouncements != 0) {
-                fetch("http://3.218.225.62:3040/alert/edit/", {
+                fetch("http://52.4.223.125:3040/alert/edit/", {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json',
@@ -564,7 +564,7 @@ function ReserveCustomer(props) {
     }
 
     function deleteReservation(rid) {
-        fetch("http://3.218.225.62:3040/reservation/delete/perm", {
+        fetch("http://52.4.223.125:3040/reservation/delete/perm", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -586,7 +586,7 @@ function ReserveCustomer(props) {
             }
 
             if(currentUser.User_getAnnouncements != 0) {
-                fetch("http://3.218.225.62:3040/alert/delete/", {
+                fetch("http://52.4.223.125:3040/alert/delete/", {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json',

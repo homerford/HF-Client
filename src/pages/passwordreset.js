@@ -30,7 +30,7 @@
 
         function handlePasswordUpdate() {
             if (passwordIsValid(password1) && (password1 === password2)) {
-                fetch("http://3.218.225.62:3040/user/update-password", {
+                fetch("http://52.4.223.125:3040/user/update-password", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"

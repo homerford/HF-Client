@@ -39,7 +39,7 @@ function Account(props) {
 
     // Handling functions
     async function getUserReservations() {
-        let response = await fetch("http://3.218.225.62:3040/reservation/get-user/"+currentUser.User_id);
+        let response = await fetch("http://52.4.223.125:3040/reservation/get-user/"+currentUser.User_id);
         response = await response.json();
         setUserReservations(response.reservations);
     }
@@ -56,7 +56,7 @@ function Account(props) {
     }
 
     function toggleUserAlerts() {
-        fetch("http://3.218.225.62:3040/user/update-getannouncements", {
+        fetch("http://52.4.223.125:3040/user/update-getannouncements", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
