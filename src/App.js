@@ -65,7 +65,7 @@ function App() {
       <div>
         {!isMobile && <nav className="app-navigation-new" id="navbar">
           {/* Visible link elements to different pages */}
-          <Link className="route-link-title" to="/">🎾 <div className="title-tint-text-1">Homer Ford</div> <div className="title-tint-text-2">Tennis Center Test</div></Link>
+          <Link className="route-link-title" to="/">🎾 <div className="title-tint-text-1">Homer Ford</div> <div className="title-tint-text-2">Tennis Center</div></Link>
           <div className="new-menu-container">
             <Link className="new-route-link-menu" to="/">Home</Link>
             <Link className="new-route-link-menu" to="/about">About</Link>
