@@ -797,6 +797,7 @@ function ReserveAdmin(props) {
 
             reservations.forEach((reservation) => {
                 if(reservation.date == day.date) {
+                    var resType = reservation.type_id;
                     var resStartTimeRaw = (reservation.timeStart).substring(0,(reservation.timeStart).length - 2);
                     var resAmOrPM = (reservation.timeStart).substring((reservation.timeStart).length - 2);
 
@@ -813,14 +814,14 @@ function ReserveAdmin(props) {
                             var timeMinutes = timeRaw.split(':')[1];
         
                             if(timeHour == resTimeHour && timeMinutes == resTimeMinutes && amOrPM == resAmOrPM) {
-                                slot.status = 'reserved';
+                                slot.status = resType == -1 ? 'closed' : 'reserved';
                                 slot.reservation = reservation.id;
                                 resIdBuffer = reservation.id;
                                 startIndex = index;
                             }
                             
                             if(startIndex > -1 && (index - startIndex < reservation.duration * 4)) {
-                                slot.status = 'reserved';
+                                slot.status = resType == -1 ? 'closed' : 'reserved';
                                 slot.reservation = resIdBuffer;
                             }
                         });
@@ -844,6 +845,7 @@ function ReserveAdmin(props) {
         var dateRawDay = dateRaw.toLocaleString('en-us', {  weekday: 'short' });
 
         var startIndex = -1;
+        var close_id = 0;
 
         slots.forEach((slot, index) => {
             var timeRaw = (slot.time).substring(0,(slot.time).length - 2);
@@ -889,8 +891,13 @@ function ReserveAdmin(props) {
                 )
             }
             else if(slot.status == 'closed') {
+                if(slot.reservation) {
+                    if (slots[index-1].reservation != slot.reservation) {
+                        close_id = slot.reservation;
+                    }
+                }
                 returnData.push(
-                    <div key={index} className="table-column-item-container-closed-2"
+                    <div key={index} className="table-column-item-container-closed-2" id={startIndex}
                         style={
                             slots[index-1] != null && slots[index-1].status != 'closed' ? 
                                 {borderTopRightRadius: blockRadius, borderTopLeftRadius: blockRadius, 
@@ -907,7 +914,64 @@ function ReserveAdmin(props) {
                                             {borderBottomRightRadius: '0.0vmin', borderBottomLeftRadius: '0.0vmin', 
                                                 borderLeft: borderWidth+' solid '+borderColor, borderRight: borderWidth+' solid '+borderColor}
                         }
-                    ></div>
+                    >
+                        {(slots[index].reservation && slots[index - 1] && slots[index - 1].reservation != slots[index].reservation) && <div>
+                            <span className="res-text" style={{marginLeft: '0vmin'}}>
+                                {"Closed - "+reservations.find(el => el.id == slots[index].reservation).duration+" hour(s)"}
+                            </span>
+                        </div>}
+                        {(slots[index].reservation && slots[index + 1] && slots[index + 1].reservation != slots[index].reservation) && 
+                        <div style={{display: "flex", flexDirection: "row"}}>
+                            {(currentUser.User_type == 2) && <span className="res-text-button" style={{marginRight: '0.75vmin', marginLeft: '0.75vmin', color: 'rgba(0,0,0,0.75)'}}
+                                onClick={(e) => {
+                                    editing = true;
+
+                                    var testRootTimeStart = reservations.find(el => el.id == close_id).timeStart;
+                                    var testRootDate = reservations.find(el => el.id == close_id).date;
+                                    var testRootDuration = reservations.find(el => el.id == close_id).duration;
+                                    var testRootID = reservations.find(el => el.id == close_id).id;
+                                    var testRootType = reservations.find(el => el.id == close_id).type_id;
+                                    var testRootNote = reservations.find(el => el.id == close_id).note;
+                                    var testRootNumCourts = reservations.find(el => el.id == close_id).court_id;
+                                    var testRootEquipment = reservations.find(el => el.id == close_id).equipment_id;
+                                    var testRootCustomer = reservations.find(el => el.id == close_id).customer_id;
+                                    var testRootPeople = reservations.find(el => el.id == close_id).people;
+
+                                    if(loggedIn) {
+                                        handleToggleModal();
+                                        setSelectedDate(testRootDate);
+                                        setSelectedTime(testRootTimeStart);
+                                        setSelectedDuration(testRootDuration);
+                                        setSelectedID(testRootID);
+                                        setSelectedType(testRootType);
+                                        setNumCourts(testRootNumCourts.length);
+                                        setCurrentArrayCourt(testRootNumCourts);
+                                        setSelectedEquipment({
+                                            racket: testRootEquipment.includes(0),
+                                            hopper: testRootEquipment.includes(1),
+                                            ballmachine: testRootEquipment.includes(2),
+                                        });
+                                        setNote(testRootNote);
+                                        setSelectedPeople(testRootPeople);
+                                        setSelectedCustomerID(testRootCustomer);
+                                    }
+                                    else {
+                                        window.location.pathname = "/login"
+                                    }
+                                }}
+                            >
+                                Edit
+                            </span>}
+                            {(currentUser.User_type == 2) && <span className="res-text-button" style={{marginRight: '0.75vmin', color: 'rgba(0,0,0,0.45)'}}
+                                onClick={(e) => {
+                                    
+                                    handleButtonDelete(close_id);
+                                }}
+                            >
+                                Delete
+                            </span>}
+                        </div>}
+                    </div>
                 )
             }
             else if(slot.status == 'reserved') {
@@ -1436,7 +1500,13 @@ function ReserveAdmin(props) {
                             <div className="reserve-modal-window-body-text">Time: {selectedTime}</div>
                         </div>
                         <div className="reserve-modal-window-body-row">
-                            {editing && <div className="reserve-modal-window-body-text">Court List: {currentArrayCourt.toString()}</div>}
+                            {editing && <div className="reserve-modal-window-body-text"
+                                style={{
+                                    backgroundColor: 'rgba(255, 200, 60, 0.5)',
+                                    width: '50%',
+                                    maxWidth: '50%',
+                                }}
+                            >Court List: {currentArrayCourt.toString()}</div>}
                             <div className="reserve-modal-window-body-text">Courts: 
                                 <div className="reserve-modal-window-button-duration-sub"
                                     onClick={() => {
@@ -1517,6 +1587,13 @@ function ReserveAdmin(props) {
                                 }}
                             >
                                 Event
+                            </span>
+                            <span className={selectedType == -1 ? "reserve-modal-window-button-type active" : "reserve-modal-window-button-type"}
+                                onClick={() => {
+                                    setSelectedType(-1);
+                                }}
+                            >
+                                Closure
                             </span>
                         </div>
                         <div className="reserve-modal-window-body-text">

@@ -10,6 +10,9 @@ Login:
 
 Admin:
 
+Closures:
+    1. Allow admin to create partial closures
+
 Reports:
 
 Account:
@@ -21,7 +24,8 @@ ________________________________________________________________________________
 Questions:
 1. Should we switch back to actual deletes? It would save space and be easier to manage. (Yes)
 2. How should we split a reservation?
-3. Payments? Stripe.
+3. Payments? (Stripe)
+4. Should we
 
 
 AWS:

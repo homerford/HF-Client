@@ -2,7 +2,7 @@
 git add .
 
 // Commit local repo with message
-git commit -m "Undo Test"
+git commit -m "Added Initial Partial Closures"
 
 // Push to remote repo
 git push -u origin main
