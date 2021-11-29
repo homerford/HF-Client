@@ -566,7 +566,8 @@ function Test(props) {
                                             whiteSpace: "nowrap"
                                         }}
                                     >
-                                        {(selectedUser.User_password).substring(0, 20)+"..."}
+                                        {/* {(selectedUser.User_password).substring(0, 20)+"..."} */}
+                                        Change Password
                                     </span>
                                 </div>
                                 <div className="user-detail-item">

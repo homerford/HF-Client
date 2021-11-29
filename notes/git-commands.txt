@@ -2,7 +2,7 @@
 git add .
 
 // Commit local repo with message
-git commit -m "Added Initial Partial Closures"
+git commit -m "Added multiple business requirements"
 
 // Push to remote repo
 git push -u origin main

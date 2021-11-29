@@ -11,6 +11,7 @@ import moment from 'moment';
 
 // Importing the components used in this page
 import Loading from '../components/Loading';
+import global_variables from '../global/GlobalVariables';
 
 // Variables declared that will persist even if page is changed
 var localNumberRaw = 0;
@@ -56,8 +57,13 @@ function ReserveCustomer(props) {
     });
     const [selectedReseervationToDelete, setSelectedReservationToDelete] = useState(null);
     const [customerReservations, setCustomerReservations] = useState([]);
-    const [timeValue, setTimeValue] = useState("7:30am");
     const socket = props.socket;
+
+    let momentCurrent = moment();
+    let currentRemander = 15 - (momentCurrent.minute() % 15);
+    let momentResult = momentCurrent.add(currentRemander, 'minutes').format("H:mm a");
+    const [timeValue, setTimeValue] = useState(momentResult);
+    
 
     const timePickerRef = useRef(null);
 
@@ -433,9 +439,12 @@ function ReserveCustomer(props) {
     }
 
     async function getCustomerReservationData() {
-        let response = await fetch("http://52.4.223.125:3040/reservation/get-user/"+currentUser.User_id);
+        let response = await fetch("http://52.4.223.125:3040/reservation/get-user-relevant/"+currentUser.User_id);
         response = await response.json();
-        setCustomerReservations(response.reservations);
+        let sortedReservations = response.reservations.sort((a, b) => {
+            return new Date(a.Reservation_date) - new Date(b.Reservation_date);
+        });
+        setCustomerReservations(sortedReservations);
     }
 
     async function getAllUsers() {
@@ -656,7 +665,17 @@ function ReserveCustomer(props) {
                         }
                     }}
                 >
-                    {getFormattedDate(key)} {columnDays[i].closed ? " - CLOSED" : ""}
+                    {moment(getFormattedDate(key), "MM/D/YYYY").isSame(moment().format("MM/D/YYYY")) 
+                    && <span>Today <span style={{opacity: 0.5}}>{`(${getFormattedDate(key)})`}</span> {columnDays[i].closed ? " - CLOSED" : ""}</span>}
+
+                    {moment(getFormattedDate(key), "MM/D/YYYY").isSame(moment().add(1, 'days').format("MM/D/YYYY")) 
+                    && <span>Tomorrow <span style={{opacity: 0.5}}>{`(${getFormattedDate(key)})`}</span> {columnDays[i].closed ? " - CLOSED" : ""}</span>}
+
+                    {
+                    !moment(getFormattedDate(key), "MM/D/YYYY").isSame(moment().format("MM/D/YYYY")) 
+                    && !moment(getFormattedDate(key), "MM/D/YYYY").isSame(moment().add(1, 'days').format("MM/D/YYYY"))
+                    && <span>{moment(getFormattedDate(key), "MM/D/YYYY").format("dddd")} <span style={{opacity: 0.5}}>{`(${getFormattedDate(key)})`}</span> {columnDays[i].closed ? " - CLOSED" : ""}</span>}
+
                     {!columnDays[i].closed && <div className="lite-day-button">Reserve</div>}
                 </div>
             );
@@ -668,10 +687,168 @@ function ReserveCustomer(props) {
     function renderCustomerReservations() {
         var returnData = [];
 
-        customerReservations.map((reservation, index) => {
+        let reservationsToday = customerReservations.filter((res) => {
+            return moment(res.Reservation_date, "MM/D/YYYY").isSame(moment().format("MM/D/YYYY"));
+        });
+
+        let reservationsThisWeek= customerReservations.filter((res) => {
+            return moment(res.Reservation_date, "MM/D/YYYY").isBetween(moment().format("MM/D/YYYY"), moment().add(7, 'days').format("MM/D/YYYY"))
+        });
+
+        let reservationsLater= customerReservations.filter((res) => {
+            return moment(res.Reservation_date, "MM/D/YYYY").isAfter(moment().add(7, 'days').format("MM/D/YYYY"))
+        });
+
+        returnData.push(
+            <div className="customer-reservation-category-break" key={"break-today"}>Today</div>
+        )
+        if(reservationsToday.length == 0) {
+            returnData.push(
+                <div 
+                    className="customer-reservation-category-break"
+                    key={"break-today-nothing"}
+                    style={{
+                        opacity: 0.5,
+                        fontSize: "1.5vmin",
+                        paddingLeft: "1vmin",
+                    }}
+                >Nothing scheduled for today...</div>
+            )
+        }
+        reservationsToday.map((reservation, index) => {
             returnData.push(
                 <div key={index} className="lite-day-label" style={{height: "5vmin", fontSize: "1.5vmin"}}>
-                    {reservation.Reservation_date}, Starting at {reservation.Reservation_time} - {reservation.Reservation_duration} hour(s)
+                   <span style={{opacity: 0.5}}>{reservation.Reservation_date}</span>&nbsp; From {reservation.Reservation_time} to {moment(reservation.Reservation_time, "hh:mma").add(reservation.Reservation_duration, "hours").format("h:mma")}
+                    <span className="customer-reservation-button" style={{marginLeft: "auto"}}
+                        onClick={() => {
+                            if(loggedIn) {
+                                editing = true;
+                                setSelectedID(reservation.Reservation_id);
+                                setSelectedCustomerID(currentUser.User_id);
+                                setSelectedDate(reservation.Reservation_date);
+                                setSelectedTime(reservation.Reservation_time);
+                                setTimeValue(reservation.Reservation_time);
+                                setNumCourts(reservation.Court_id.length);
+                                setCurrentArrayCourt(reservation.Court_id);
+                                setSelectedType(reservation.Reservation_type);
+                                setSelectedPeople(reservation.Reservation_people);
+                                setSelectedEquipment({
+                                    racket: reservation.Equipment_id.includes(0),
+                                    hopper: reservation.Equipment_id.includes(1),
+                                    ballmachine: reservation.Equipment_id.includes(2),
+                                });
+                                setNote(reservation.Reservation_note);
+                                setSelectedDuration(parseFloat(reservation.Reservation_duration));
+                                handleToggleModal();
+                            }
+                            else {
+                                window.location.pathname = "/login"
+                            }
+                        }}
+                    >
+                        Edit
+                    </span>
+                    <span className="customer-reservation-button"
+                        onClick={() => {
+                            if(loggedIn) {
+                                handleButtonDelete(reservation.Reservation_id, reservation.Reservation_date);
+                            }
+                            else {
+                                window.location.pathname = "/login"
+                            }
+                        }}
+                    >
+                        Delete
+                    </span>
+                </div>
+            );
+        });
+
+        returnData.push(
+            <div className="customer-reservation-category-break" key={"break-week"}>This Week</div>
+        )
+        if(reservationsThisWeek.length == 0) {
+            returnData.push(
+                <div 
+                    className="customer-reservation-category-break"
+                    key={"break-week-nothing"}
+                    style={{
+                        opacity: 0.5,
+                        fontSize: "1.5vmin",
+                        paddingLeft: "1vmin",
+                    }}
+                >Nothing scheduled for this week...</div>
+            )
+        }
+        reservationsThisWeek.map((reservation, index) => {
+            returnData.push(
+                <div key={`break-week-${index}`} className="lite-day-label" style={{height: "5vmin", fontSize: "1.5vmin"}}>
+                    <span style={{opacity: 0.5}}>{reservation.Reservation_date}</span>&nbsp; From {reservation.Reservation_time} to {moment(reservation.Reservation_time, "hh:mma").add(reservation.Reservation_duration, "hours").format("h:mma")}
+                    <span className="customer-reservation-button" style={{marginLeft: "auto"}}
+                        onClick={() => {
+                            if(loggedIn) {
+                                editing = true;
+                                setSelectedID(reservation.Reservation_id);
+                                setSelectedCustomerID(currentUser.User_id);
+                                setSelectedDate(reservation.Reservation_date);
+                                setSelectedTime(reservation.Reservation_time);
+                                setTimeValue(reservation.Reservation_time);
+                                setNumCourts(reservation.Court_id.length);
+                                setCurrentArrayCourt(reservation.Court_id);
+                                setSelectedType(reservation.Reservation_type);
+                                setSelectedPeople(reservation.Reservation_people);
+                                setSelectedEquipment({
+                                    racket: reservation.Equipment_id.includes(0),
+                                    hopper: reservation.Equipment_id.includes(1),
+                                    ballmachine: reservation.Equipment_id.includes(2),
+                                });
+                                setNote(reservation.Reservation_note);
+                                setSelectedDuration(parseFloat(reservation.Reservation_duration));
+                                handleToggleModal();
+                            }
+                            else {
+                                window.location.pathname = "/login"
+                            }
+                        }}
+                    >
+                        Edit
+                    </span>
+                    <span className="customer-reservation-button"
+                        onClick={() => {
+                            if(loggedIn) {
+                                handleButtonDelete(reservation.Reservation_id, reservation.Reservation_date);
+                            }
+                            else {
+                                window.location.pathname = "/login"
+                            }
+                        }}
+                    >
+                        Delete
+                    </span>
+                </div>
+            );
+        });
+
+        returnData.push(
+            <div className="customer-reservation-category-break" key={"break-later"}>Later On</div>
+        )
+        if(reservationsLater.length == 0) {
+            returnData.push(
+                <div 
+                    className="customer-reservation-category-break"
+                    key={"break-later-nothing"}
+                    style={{
+                        opacity: 0.5,
+                        fontSize: "1.5vmin",
+                        paddingLeft: "1vmin",
+                    }}
+                >Nothing scheduled after this week...</div>
+            )
+        }
+        reservationsLater.map((reservation, index) => {
+            returnData.push(
+                <div key={`break-later-${index}`} className="lite-day-label" style={{height: "5vmin", fontSize: "1.5vmin"}}>
+                    <span style={{opacity: 0.5}}>{reservation.Reservation_date}</span>&nbsp; From {reservation.Reservation_time} to {moment(reservation.Reservation_time, "hh:mma").add(reservation.Reservation_duration, "hours").format("h:mma")}
                     <span className="customer-reservation-button" style={{marginLeft: "auto"}}
                         onClick={() => {
                             if(loggedIn) {
@@ -907,6 +1084,10 @@ function ReserveCustomer(props) {
 
         // console.log("Start: "+time_start.format('H:mm')+", End: "+time_end.format('H:mm'));
 
+        if(time_start.isBefore(moment())) {
+            return false;
+        }
+
         if(isWeekday(reservationData.date)) {
             if(!time_start.isBetween(timeOpen,timeClosedWeek) || !time_end.isBetween(timeOpen,timeClosedWeek)) {
                 if(!time_start.isSame(timeOpen) && !time_end.isSame(timeClosedWeek)) {
@@ -999,7 +1180,11 @@ function ReserveCustomer(props) {
             hopper: false,
             ballmachine: false
         });
-        setTimeValue('7:30am');
+
+        let momentCurrent = moment();
+        let currentRemander = 15 - (momentCurrent.minute() % 15);
+        let momentResult = momentCurrent.add(currentRemander, 'minutes').format("H:mm a");
+        setTimeValue(momentResult);
     }
 
     return (
@@ -1013,9 +1198,8 @@ function ReserveCustomer(props) {
                 <div className="container-option-lite" style={{marginTop: "2vmin"}}>
                     Edit an Existing Reservation
                     <div className="lite-edit-label">
-                        {customerReservations.length > 0 ? "Select your reservation" : "You haven't made any reservations yet..."}
+                        {customerReservations.length > 0 ? "Select your reservation" : "Select your reservation"}
                     </div>
-                    <br/>
                     {renderCustomerReservations()}
                 </div>
                 <div className="lite-warning-label">
@@ -1044,7 +1228,7 @@ function ReserveCustomer(props) {
                                     ref={timePickerRef}
                                     classList="time-picker"
                                     use12Hours
-                                    defaultValue={moment('7:30 AM', "h:mm A")} 
+                                    defaultValue={moment(moment.now(), "h:mm A")} 
                                     format="h:mm A"
                                     allowClear={false}
                                     minuteStep={15}

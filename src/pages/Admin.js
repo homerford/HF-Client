@@ -257,18 +257,16 @@ function Admin(props) {
                         <div className="container-admin2-content-item-title">Data Reports</div>
                         <div className="container-admin2-content-item-body-report">
                             <div className="container-report-item" style={{height: "25vmin"}}>
-                                {/* Pie Chart - Number of Reservations for each Court over the Past Month */}
-                                {/* <span className="admin2-chart-title">Top 5 Users by Total Reservations</span> */}
-                                {/* <Charts chartData={pieData} chartType={"pie"}/> */}
+                                <span className="admin2-chart-title">Top 5 Users by Total Reservations</span>
+                                <Charts chartData={pieData} chartType={"pie"}/>
                             </div>
                             {/* <div className="container-report-item">
                                 <span className="admin2-chart-title">Number of Reservations for the Next 7 Days</span>
                                 <Charts chartData={lineData} chartType={"line"}/>
                             </div> */}
                             <div className="container-report-item" style={{height: "25vmin"}}>
-                                {/* Bar Chart - Top 10 users by cumulative reservation duration over the last month */}
-                                {/* <span className="admin2-chart-title">10 Busiest Upcoming Dates <br/>(By Reservation #)</span> */}
-                                {/* <Charts chartData={barData} chartType={"bar"}/> */}
+                                <span className="admin2-chart-title">10 Busiest Upcoming Dates <br/>(By Reservation #)</span>
+                                <Charts chartData={barData} chartType={"bar"}/>
                             </div>
                             <div className="container-report-item-more"
                                 onClick={() => {

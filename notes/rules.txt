@@ -3,34 +3,53 @@ ________________________________________________________________________________
 Equipment:
 
 Reservations:
+    1. Limit customer reservations to two per day. No overlapping times, no matter what court.
+    2. Enable guest reservations from the admin side(walk-in/call-in information).
+        2a. First name and phone number required only.
+    3. (Complete) Existing customer reservations only show current/future.
+    4. (Complete) Don't allow reservations before the current datetime.
+    5. (Complete) Give admin reservation modal a timepicker.
 
 Alerts:
     1. SMS 
+
 Login:
+    1. Point registration verification to correct IP/URL.
 
 Admin:
 
 Closures:
-    1. Allow admin to create partial closures
 
 Reports:
 
 Account:
+    2. Allow customers to edit email, firstname/lastname, and phone#(once a month)
 
 Contact:
+
+AWS:
+    1. Get Domain Name
 
 __________________________________________________________________________________________________________
 
 Questions:
-1. Should we switch back to actual deletes? It would save space and be easier to manage. (Yes)
+1. I've made reservation actually delete. Should we do the same for users? We might need to retain the 
+   deleted users because our reports, feedback, etc., might reference a deleted user.
 2. How should we split a reservation?
 3. Payments? (Stripe)
-4. Should we
+4. Instructor ability to create reservations?
+5. Should closures delete exisitng reservations?
 
 
-AWS:
-1. Create an account
-2. Purchase two node instances through lightsail
-   2a. 2GB RAM, 1vCPU, 60GB SSD (Node Instance) - Server
-   2b. 4GB RAM, 2vCPU, 80GB SSD (Node Instance) - Client
-3. 
+Project Assignments:
+Cameron:
+- Contact
+- About
+
+Johnny:
+- Mobile Formatting
+- Homepage Reformatting
+
+Cole:
+- Reservation Systems
+- Account page

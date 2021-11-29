@@ -12,12 +12,14 @@ import {
     Link,
     useHistory
   } from "react-router-dom";
+  import { TimePicker } from 'antd';
 import moment from 'moment';
 
 // Importing the components used in this page
 import Loading from '../components/Loading';
 import bg_redo from '../assets/images/svgs/icons/solid/redo.svg';
 import bg_back from '../assets/images/svgs/icons/solid/angle-double-left.svg';
+import global_variables from '../global/GlobalVariables';
 
 var timeOpen = moment('7:30am', 'H:mm a');
 var timeClosedWeek = moment('9:00pm', 'H:mm a');
@@ -37,6 +39,12 @@ const maxCourtReservations = 16;
 const daysArray = [0,1,2,3,4,5,6];
 const courtsNumberArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 const ballMachineCourts = [1,4,5,11,12,13,16];
+
+// Moment variables
+const format = 'H:mm a';
+var timeOpen = moment('7:30am', 'H:mm a');
+var timeClosedWeek = moment('9:00pm', 'H:mm a');
+var timeClosedWeekend = moment('6:00pm', 'H:mm a');
 
 var resArray = [];
 var resBuffer = [];
@@ -59,6 +67,7 @@ function ReserveAdmin(props) {
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
     const [selectedType, setSelectedType] = useState(0);
+    const [selectedGuest, setSelectedGuest] = useState(0);
     const [note, setNote] = useState('');
     const [numCourts, setNumCourts] = useState(1);
     const [selectedDuration, setSelectedDuration] = useState(0.75);
@@ -73,13 +82,22 @@ function ReserveAdmin(props) {
     });
     const [socketRefresh, setSocketRefresh] = useState(true);
     const [selectedReseervationToDelete, setSelectedReservationToDelete] = useState(null);
+
+    const [selectedGuestName, setSelectedGuestName] = useState('');
+    const [selectedGuestPhone, setSelectedGuestPhone] = useState('');
     const history = useHistory();
+
+    let momentCurrent = moment();
+    let currentRemander = 15 - (momentCurrent.minute() % 15);
+    let momentResult = momentCurrent.add(currentRemander, 'minutes').format("H:mm a");
+    const [timeValue, setTimeValue] = useState(momentResult);
+
+    const timePickerRef = useRef(null);
 
     const socket = props.socket;
     
     // Regular varaible declaration
     var isMobile = props.isMobile;
-
     var timeslotsJSON = [
         {
             time: '7:00am',
@@ -381,7 +399,6 @@ function ReserveAdmin(props) {
                 reservation: null
             }
     ]
-
     const [columnDays, setColumnDays] = useState([
         {
             date: getFormattedDate((7 * sessionStorage.getItem("adminGlobalDate")) + 0),
@@ -658,7 +675,7 @@ function ReserveAdmin(props) {
     }
 
     function deleteReservation(rid) {
-        fetch("http://52.4.223.125:3040/reservation/delete", {
+        fetch("http://52.4.223.125:3040/reservation/delete/perm", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -813,7 +830,9 @@ function ReserveAdmin(props) {
                             var timeHour = timeRaw.split(':')[0];
                             var timeMinutes = timeRaw.split(':')[1];
         
-                            if(timeHour == resTimeHour && timeMinutes == resTimeMinutes && amOrPM == resAmOrPM) {
+                            if(timeHour == resTimeHour 
+                                && timeMinutes == resTimeMinutes 
+                                && amOrPM == resAmOrPM) {
                                 slot.status = resType == -1 ? 'closed' : 'reserved';
                                 slot.reservation = reservation.id;
                                 resIdBuffer = reservation.id;
@@ -829,6 +848,24 @@ function ReserveAdmin(props) {
                 }
             })
 
+            if(dateRawDay == 'Sat' || dateRawDay == 'Sun') {
+                dayTimeslots.forEach((slot) => {
+                    var timeRaw = (slot.time).substring(0,(slot.time).length - 2);
+                    var amOrPM = (slot.time).substring((slot.time).length - 2);
+                    var timeHour = timeRaw.split(':')[0];
+                    var timeMinutes = timeRaw.split(':')[1];
+
+                    if(timeHour >= 6 && timeHour != 12 && amOrPM == 'pm') {
+                        slot.status = 'closed'
+                        slot.reservation = null;
+                    }
+                    else if(timeHour == 7 && timeMinutes < 30 && amOrPM == 'am') {
+                        slot.status = 'closed'
+                        slot.reservation = null;
+                    }
+                })
+            }
+            
             returnData.push(
                 <div key={index} className="table-content-column">
                     {renderColumnItems(day.date,dayTimeslots)}
@@ -845,7 +882,7 @@ function ReserveAdmin(props) {
         var dateRawDay = dateRaw.toLocaleString('en-us', {  weekday: 'short' });
 
         var startIndex = -1;
-        var close_id = 0;
+        var my_id = 0;
 
         slots.forEach((slot, index) => {
             var timeRaw = (slot.time).substring(0,(slot.time).length - 2);
@@ -878,6 +915,7 @@ function ReserveAdmin(props) {
                                 handleToggleModal();
                                 setSelectedDate(date);
                                 setSelectedTime(slot.time);
+                                setTimeValue(slot.time);
                             }
                             else {
                                 window.location.pathname = "/login"
@@ -891,13 +929,14 @@ function ReserveAdmin(props) {
                 )
             }
             else if(slot.status == 'closed') {
-                if(slot.reservation) {
-                    if (slots[index-1].reservation != slot.reservation) {
-                        close_id = slot.reservation;
+                if(slots[index-1]) {
+                    if (slots[index-1].reservation != slots[index].reservation) {
+                        my_id = slot.reservation;
                     }
                 }
+
                 returnData.push(
-                    <div key={index} className="table-column-item-container-closed-2" id={startIndex}
+                    <div key={index} className="table-column-item-container-closed-2"
                         style={
                             slots[index-1] != null && slots[index-1].status != 'closed' ? 
                                 {borderTopRightRadius: blockRadius, borderTopLeftRadius: blockRadius, 
@@ -915,32 +954,44 @@ function ReserveAdmin(props) {
                                                 borderLeft: borderWidth+' solid '+borderColor, borderRight: borderWidth+' solid '+borderColor}
                         }
                     >
-                        {(slots[index].reservation && slots[index - 1] && slots[index - 1].reservation != slots[index].reservation) && <div>
+                        {(slots[index].reservation 
+                        && slots[index - 2] 
+                        && slots[index - 2].reservation != slots[index].reservation 
+                        && slots[index-1].reservation == slots[index].reservation) 
+                        && (date == reservations.find(res => res.id == slot.reservation).date)
+                        && 
+                        <div className="res-admin-info">
                             <span className="res-text" style={{marginLeft: '0vmin'}}>
                                 {"Closed - "+reservations.find(el => el.id == slots[index].reservation).duration+" hour(s)"}
                             </span>
                         </div>}
-                        {(slots[index].reservation && slots[index + 1] && slots[index + 1].reservation != slots[index].reservation) && 
-                        <div style={{display: "flex", flexDirection: "row"}}>
+                        {(slots[index].reservation 
+                        && slots[index + 1] 
+                        && slots[index + 1].reservation != slots[index].reservation) 
+                        && (date == reservations.find(res => res.id == slot.reservation).date)
+                        && 
+                        <div style={{display: "flex", flexDirection: "row"}} id={my_id}>
                             {(currentUser.User_type == 2) && <span className="res-text-button" style={{marginRight: '0.75vmin', marginLeft: '0.75vmin', color: 'rgba(0,0,0,0.75)'}}
                                 onClick={(e) => {
                                     editing = true;
 
-                                    var testRootTimeStart = reservations.find(el => el.id == close_id).timeStart;
-                                    var testRootDate = reservations.find(el => el.id == close_id).date;
-                                    var testRootDuration = reservations.find(el => el.id == close_id).duration;
-                                    var testRootID = reservations.find(el => el.id == close_id).id;
-                                    var testRootType = reservations.find(el => el.id == close_id).type_id;
-                                    var testRootNote = reservations.find(el => el.id == close_id).note;
-                                    var testRootNumCourts = reservations.find(el => el.id == close_id).court_id;
-                                    var testRootEquipment = reservations.find(el => el.id == close_id).equipment_id;
-                                    var testRootCustomer = reservations.find(el => el.id == close_id).customer_id;
-                                    var testRootPeople = reservations.find(el => el.id == close_id).people;
+                                    var testRootId = e.currentTarget.parentNode.id;
+                                    var testRootTimeStart = reservations.find(el => el.id == testRootId).timeStart;
+                                    var testRootDate = reservations.find(el => el.id == testRootId).date;
+                                    var testRootDuration = reservations.find(el => el.id == testRootId).duration;
+                                    var testRootID = reservations.find(el => el.id == testRootId).id;
+                                    var testRootType = reservations.find(el => el.id == testRootId).type_id;
+                                    var testRootNote = reservations.find(el => el.id == testRootId).note;
+                                    var testRootNumCourts = reservations.find(el => el.id == testRootId).court_id;
+                                    var testRootEquipment = reservations.find(el => el.id == testRootId).equipment_id;
+                                    var testRootCustomer = reservations.find(el => el.id == testRootId).customer_id;
+                                    var testRootPeople = reservations.find(el => el.id == testRootId).people;
 
                                     if(loggedIn) {
                                         handleToggleModal();
                                         setSelectedDate(testRootDate);
                                         setSelectedTime(testRootTimeStart);
+                                        setTimeValue(testRootTimeStart);
                                         setSelectedDuration(testRootDuration);
                                         setSelectedID(testRootID);
                                         setSelectedType(testRootType);
@@ -964,8 +1015,8 @@ function ReserveAdmin(props) {
                             </span>}
                             {(currentUser.User_type == 2) && <span className="res-text-button" style={{marginRight: '0.75vmin', color: 'rgba(0,0,0,0.45)'}}
                                 onClick={(e) => {
-                                    
-                                    handleButtonDelete(close_id);
+                                    var testRootId = e.currentTarget.parentNode.id;
+                                    handleButtonDelete(testRootId);
                                 }}
                             >
                                 Delete
@@ -976,6 +1027,7 @@ function ReserveAdmin(props) {
             }
             else if(slot.status == 'reserved') {
                 if(slots[index-1].reservation != slots[index].reservation) {
+                    my_id = slot.reservation;
                     startIndex = index;
                 }
                 returnData.push(
@@ -989,7 +1041,7 @@ function ReserveAdmin(props) {
                                 ? "table-column-item-container-reserved-2_event"
                                 : "table-column-item-container-reserved-2"
                         } 
-                        id={startIndex}
+                        id={my_id}
                         style={
                             (slots[index-1].reservation != slots[index].reservation) ? 
                                 {borderTopRightRadius: blockRadius, borderTopLeftRadius: blockRadius, 
@@ -1001,16 +1053,16 @@ function ReserveAdmin(props) {
                                         borderLeft: borderWidth+' solid '+borderColor, borderRight: borderWidth+' solid '+borderColor}
                         }
                     >
-                        {(slots[index-1].reservation != slots[index].reservation) 
+                        {(slots[index-2].reservation != slots[index].reservation && slots[index-1].reservation == slots[index].reservation) 
                         ? 
-                        <>
-                            <span className="res-text" style={{marginLeft: '1.5vmin'}}>
+                        <div className="res-admin-info">
+                            <span className="res-text">
                                 {reservations.find(el => el.id == slots[index].reservation).timeStart + " - "+reservations.find(el => el.id == slots[index].reservation).duration+" hour(s)"}
                             </span>
-                            <span className="res-text" id="ref-res" style={{marginRight: '0.75vmin', color: 'rgba(0,0,0,0.35)', opacity: '0%', pointerEvents: 'none'}}>
+                            <span className="res-text" id="ref-res" style={{marginRight: '0.75vmin', color: 'rgba(0,0,0,0.35)', opacity: '0%', pointerEvents: 'none', height: "0vmin"}}>
                                 {reservations.find(el => el.id == slots[index].reservation).id}
                             </span>
-                        </>
+                        </div>
                         : ''}
 
                         {(slots[index+1].reservation != slots[index].reservation) 
@@ -1019,8 +1071,8 @@ function ReserveAdmin(props) {
                             {<span className="res-text-button" style={{marginRight: '0.75vmin', marginLeft: '0.75vmin', color: 'rgba(0,0,0,0.75)'}}
                                 onClick={(e) => {
                                     editing = true;
-                                    var parentElement = returnData[e.currentTarget.parentNode.id];
-                                    var testRootId = parentElement.props.children[0].props.children[1].props.children;
+
+                                    var testRootId = e.currentTarget.parentNode.id;
 
                                     var testRootTimeStart = reservations.find(el => el.id == testRootId).timeStart;
                                     var testRootDate = reservations.find(el => el.id == testRootId).date;
@@ -1037,6 +1089,7 @@ function ReserveAdmin(props) {
                                         handleToggleModal();
                                         setSelectedDate(testRootDate);
                                         setSelectedTime(testRootTimeStart);
+                                        setTimeValue(testRootTimeStart);
                                         setSelectedDuration(testRootDuration);
                                         setSelectedID(testRootID);
                                         setSelectedType(testRootType);
@@ -1047,7 +1100,23 @@ function ReserveAdmin(props) {
                                             hopper: testRootEquipment.includes(1),
                                             ballmachine: testRootEquipment.includes(2),
                                         });
-                                        setNote(testRootNote);
+
+                                        if(testRootNote.includes("&$>;")) {
+                                            let noteBuffer = testRootNote;
+                                            // <$%guest_name%$><$&${selectedGuestName}&$>;<$%guest_phone%$><$&${selectedGuestPhone}&$>;
+                                            // setNote(testRootNote.substring(0, testRootNote.indexOf("<$%")));
+                                            setNote(testRootNote.substring(0, testRootNote.indexOf("<$%")));
+                                            setSelectedGuest(1);
+                                            let guestData = {
+                                                name: testRootNote.substring(testRootNote.indexOf("<$&")+3, testRootNote.indexOf("&$>")),
+                                                phone: testRootNote.substring(testRootNote.lastIndexOf("<$&")+3, testRootNote.lastIndexOf("&$>")),
+                                            }
+                                            setSelectedGuestName(guestData.name);
+                                            setSelectedGuestPhone(guestData.phone);
+                                        }
+                                        else {
+                                            setNote(testRootNote);
+                                        }
                                         setSelectedPeople(testRootPeople);
                                         setSelectedCustomerID(testRootCustomer);
                                     }
@@ -1061,8 +1130,7 @@ function ReserveAdmin(props) {
                             {/* (currentUser) && (currentUser.User_id == reservations.find(el => el.id == slots[startIndex].reservation).customer_id) &&  */}
                             {(currentUser.User_type == 2) && <span className="res-text-button" style={{marginRight: '0.75vmin', color: 'rgba(0,0,0,0.45)'}}
                                 onClick={(e) => {
-                                    var parentElement = returnData[e.currentTarget.parentNode.id];
-                                    var testRootId = parentElement.props.children[0].props.children[1].props.children;
+                                    var testRootId = e.currentTarget.parentNode.id;
                                     var testRootDuration = reservations.find(el => el.id == testRootId).duration;
                                     var adjustedDuration = (testRootDuration - 0.25) * 4;
 
@@ -1189,7 +1257,7 @@ function ReserveAdmin(props) {
                 date: selectedDate,
                 timeStart: selectedTime,
                 duration: selectedDuration,
-                note: note.replace(/"/g, '\''),
+                note: selectedGuest == 0 ? note.replace(/"/g, '\'') : note.replace(/"/g, '\'')+`<$%guest_name%$><$&${selectedGuestName}&$>;<$%guest_phone%$><$&${selectedGuestPhone}&$>;`,
                 court_id: "["+courtArray.toString()+"]",
                 equipment_id: "["+equipmentArray.toString()+"]",
                 customer_id: selectedCustomerID,
@@ -1252,7 +1320,7 @@ function ReserveAdmin(props) {
                 date: selectedDate,
                 timeStart: selectedTime,
                 duration: selectedDuration,
-                note: note.replace(/"/g, '\''),
+                note: selectedGuest == 0 ? note.replace(/"/g, '\'') : note.replace(/"/g, '\'')+`<$%guest_name%$><$&${selectedGuestName}&$>;<$%guest_phone%$><$&${selectedGuestPhone}&$>;`,
                 court_id: "["+courtArray.toString()+"]",
                 equipment_id: "["+equipmentArray.toString()+"]",
                 customer_id: selectedCustomerID,
@@ -1303,6 +1371,10 @@ function ReserveAdmin(props) {
                     return false;
                 }
             }
+        }
+
+        if(selectedGuestName == '' | selectedGuestPhone == '') {
+            return false;
         }
 
         // Make sure the reservation doesn't overlap with any other reservations
@@ -1382,6 +1454,14 @@ function ReserveAdmin(props) {
             hopper: false,
             ballmachine: false
         });
+        setSelectedGuest(0);
+        setSelectedGuestName('');
+        setSelectedGuestPhone('');
+
+        let momentCurrent = moment();
+        let currentRemander = 15 - (momentCurrent.minute() % 15);
+        let momentResult = momentCurrent.add(currentRemander, 'minutes').format("H:mm a");
+        setTimeValue(momentResult);
     }
 
     return (
@@ -1436,9 +1516,9 @@ function ReserveAdmin(props) {
                     <div className="reservation-legend">
                         <span className="legend-item"><div className="legend-item-color" style={{backgroundColor: 'rgb(165, 216, 161)'}}></div>Open</span>
                         <span className="legend-item"><div className="legend-item-color" style={{backgroundColor: 'rgb(217, 217, 217)'}}></div>Closed</span>
-                        <span className="legend-item"><div className="legend-item-color" style={{backgroundColor: 'rgb(179, 194, 255)'}}></div>Reserved</span>
+                        <span className="legend-item"><div className="legend-item-color" style={{backgroundColor: 'rgb(255, 219, 128)'}}></div>Reserved</span>
                         {/* <span className="legend-item"><div className="legend-item-color" style={{backgroundColor: 'rgb(138, 162, 255)'}}></div>My Reservation</span> */}
-                        <span className="legend-item"><div className="legend-item-color" style={{backgroundColor: 'rgb(255, 219, 128)'}}></div>Reserved - Event</span>
+                        <span className="legend-item"><div className="legend-item-color" style={{backgroundColor: 'rgb(255, 189, 128)'}}></div>Reserved - Event</span>
                         {/* <span className="legend-item"><div className="legend-item-color" style={{backgroundColor: 'rgb(255, 200, 60)'}}></div>My Event Reservation</span> */}
                     </div>
                 </div>
@@ -1486,7 +1566,7 @@ function ReserveAdmin(props) {
             <div className="reserve-modal-main-container">
                 <div className="reserve-modal-window-container">
                     <div className="reserve-modal-window-title-container">
-                        <div className="reserve-modal-window-title-text">{editing ? "Edit" : "Create"} Reservation</div>
+                        <div className="reserve-modal-window-title-text">{editing ? "Edit" : "Create"} {selectedGuest == 1 ? "Guest" : ""} Reservation</div>
                         <div className="reserve-modal-window-button-close"
                             onClick={() => {
                                 handleToggleModal();
@@ -1495,36 +1575,158 @@ function ReserveAdmin(props) {
                         ></div> 
                     </div>
                     <div className="reserve-modal-window-body-container">
+                        <div className="reserve-modal-window-body-row"
+                            style={{
+                                display: editing ? "none" : ""
+                            }}
+                        >
+                            <div className="reserve-modal-window-body-text">Guest Reservation?
+                                <span className={selectedGuest == 0 ? "reserve-modal-window-button-type active" : "reserve-modal-window-button-type"}
+                                    onClick={() => {
+                                        if(!editing) {
+                                            setSelectedGuest(0);
+                                            setSelectedCustomerID(currentUser.User_id);
+                                        }
+                                    }}
+                                >
+                                    No
+                                </span>
+                                <span className={selectedGuest == 1 ? "reserve-modal-window-button-type active" : "reserve-modal-window-button-type"}
+                                    onClick={() => {
+                                        if(!editing) {
+                                            setSelectedGuest(1);
+                                            setSelectedCustomerID(userArray.find(user => user.User_email == "homerfordtenniscenter@gmail.com").User_id);
+                                        }
+                                    }}
+                                >
+                                    Yes
+                                    
+                                </span>
+                            </div>
+                        </div>
+                        <div className={`reserve-modal-window-body-row`}
+                            style={{
+                                display: selectedGuest == 0 ? "none" : "",
+                                opacity: selectedGuest == 0 ? "0" : "1",
+                            }}
+                        >
+                            <div className="reserve-modal-window-body-text">First Name:</div>
+                            <div className="reserve-modal-window-body-text">Phone:</div>
+                        </div>
+                        <div className={`reserve-modal-window-body-row`}
+                            style={{
+                                display: selectedGuest == 0 ? "none" : "",
+                                opacity: selectedGuest == 0 ? "0" : "1",
+                            }}
+                        >
+                            <input type="text" className="reserve-customer-select" 
+                                style={{
+                                    marginLeft: "0vmin",
+                                    marginRight: "1vmin",
+                                    height: "3vmin",
+                                    paddingLeft: "1vmin",
+                                }}
+                                onChange={(e) => {
+                                    setSelectedGuestName(e.target.value);
+                                }}
+                                value={selectedGuestName}
+                            />
+                            <input type="text" className="reserve-customer-select" 
+                                style={{
+                                    marginLeft: "0vmin",
+                                    marginRight: "1vmin",
+                                    height: "3vmin",
+                                    paddingLeft: "1vmin",
+                                }}
+                                onChange={(e) => {
+                                    setSelectedGuestPhone(e.target.value);
+                                }}
+                                value={selectedGuestPhone}
+                            />
+                        </div>
+
+                        <div className="reserve-modal-window-body-linebreak" 
+                            style={{
+                                display: selectedGuest == 0 ? "none" : ""
+                            }}
+                        />
+
                         <div className="reserve-modal-window-body-row">
                             <div className="reserve-modal-window-body-text">Date: {selectedDate}</div>
-                            <div className="reserve-modal-window-body-text">Time: {selectedTime}</div>
+                            <div className="reserve-modal-window-body-text">Time: 
+                                <TimePicker 
+                                    ref={timePickerRef}
+                                    classList="time-picker"
+                                    use12Hours
+                                    defaultValue={moment(moment.now(), "h:mm A")} 
+                                    format="h:mm A"
+                                    allowClear={false}
+                                    minuteStep={15}
+                                    popupStyle={{
+                                        zIndex: '9999',
+                                    }}
+                                    value={moment(timeValue, "h:mm A")} 
+                                    size="large"
+                                    // bordered={false}
+                                    onChange={(time, timeString) => { 
+                                        let formatted_time = timeString.replace(' ', '').toLowerCase();
+                                        setSelectedTime(formatted_time);
+                                        setTimeValue(formatted_time);
+
+                                    }}
+                                    style={{
+                                        marginLeft: '0.5vmin',
+                                        borderRadius: '0.5vmin',
+                                        boxShadow: '0 2px 0.2vmin 0 rgb(0,0,0,0.1)',
+                                        border: 'none',
+                                        fontSize: '1.25vmin',
+                                        width: '12vmin'
+                                    }}
+                                />
+                            </div>
                         </div>
                         <div className="reserve-modal-window-body-row">
                             {editing && <div className="reserve-modal-window-body-text"
                                 style={{
-                                    backgroundColor: 'rgba(255, 200, 60, 0.5)',
-                                    width: '50%',
-                                    maxWidth: '50%',
+                                    flexDirection: currentArrayCourt.length == totalCourts ? 'row' : 'column',
                                 }}
-                            >Court List: {currentArrayCourt.toString()}</div>}
+                            >
+                                <span style={{marginRight: currentArrayCourt.length == totalCourts ? "1vmin" : "auto"}}>Court List: </span>
+                                <span
+                                    style={{
+                                        fontSize: currentArrayCourt.length > 11 ? currentArrayCourt.length < totalCourts ? '1vmin' : '' : '',
+                                        marginRight: "auto"
+                                    }}
+                                >
+                                    {currentArrayCourt.length == totalCourts ? "All Courts" : currentArrayCourt.toString().replace(/,/g, ", ")}
+                                </span>
+                            </div>}
                             <div className="reserve-modal-window-body-text">Courts: 
                                 <div className="reserve-modal-window-button-duration-sub"
                                     onClick={() => {
                                         handleCourtsSubtract();
                                     }}
                                 ></div>
-                                {numCourts}
+                                {numCourts == totalCourts ? "All" : numCourts}
                                 <div className="reserve-modal-window-button-duration-add"
                                     onClick={() => {
                                         handleCourtsAdd();
                                     }}
                                 ></div>
                             </div>
-                            {!editing && <div className="reserve-modal-window-body-text">
+                            {!editing && <div className="reserve-modal-window-body-text"
+                                style={{
+                                    opacity: selectedGuest == 0 ? "1" : "0.5",
+                                    pointerEvents: selectedGuest == 0 ? "auto" : "none",
+                                }}
+                            >
                                 Customer:
                                 <select className="reserve-customer-select" value={selectedCustomerID}
                                     onChange={(e) => {
                                         setSelectedCustomerID(e.target.value);
+                                    }}
+                                    style={{
+                                        height: "3vmin",
                                     }}
                                 >
                                     {userArray.map((user, idx) => {
@@ -1541,11 +1743,19 @@ function ReserveAdmin(props) {
                             <div className="reserve-modal-window-body-text" style={{opacity: "50%"}}>
                                 Reservation ID: {selectedID}
                             </div>
-                            <div className="reserve-modal-window-body-text">
+                            <div className="reserve-modal-window-body-text"
+                                style={{
+                                    opacity: selectedGuest == 1 ? "0.5" : "",
+                                    pointerEvents: selectedGuest == 1 ? "none" : "",
+                                }}
+                            >
                                 Customer: 
                                 <select className="reserve-customer-select" value={selectedCustomerID}
                                     onChange={(e) => {
                                         setSelectedCustomerID(e.target.value);
+                                    }}
+                                    style={{
+                                        height: "3vmin",
                                     }}
                                 >
                                     {userArray.map((user, idx) => {
@@ -1672,6 +1882,9 @@ function ReserveAdmin(props) {
                                     handleButtonEdit(selectedID);
                                 }
                                 else {
+                                    if(selectedGuest == 1) {
+                                        // setNote(`${note}<$%guest_name%$><$&${selectedGuestName}&$>;<$%guest_phone%$><$&${selectedGuestPhone}&$>;`);
+                                    }
                                     handleButtonSubmit();
                                 }
                             }}
