@@ -1084,7 +1084,7 @@ function ReserveCustomer(props) {
 
         // console.log("Start: "+time_start.format('H:mm')+", End: "+time_end.format('H:mm'));
 
-        if(time_start.isBefore(moment())) {
+        if(reservationData.date == getFormattedDate(dateToday) && time_start.isBefore(moment())) {
             return false;
         }
 

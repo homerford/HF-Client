@@ -1373,8 +1373,10 @@ function ReserveAdmin(props) {
             }
         }
 
-        if(selectedGuestName == '' | selectedGuestPhone == '') {
-            return false;
+        if(selectedGuest == 1) {
+            if(selectedGuestName == '' | selectedGuestPhone == '') {
+                return false;
+            }
         }
 
         // Make sure the reservation doesn't overlap with any other reservations
