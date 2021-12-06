@@ -82,9 +82,9 @@ function ReserveAdmin(props) {
     });
     const [socketRefresh, setSocketRefresh] = useState(true);
     const [selectedReseervationToDelete, setSelectedReservationToDelete] = useState(null);
-
     const [selectedGuestName, setSelectedGuestName] = useState('');
     const [selectedGuestPhone, setSelectedGuestPhone] = useState('');
+    const [dailyView, setDailyView] = useState('');
     const history = useHistory();
 
     let momentCurrent = moment();
@@ -1350,6 +1350,10 @@ function ReserveAdmin(props) {
         }
     }
 
+    function handleToggleDaily(date) {
+        setDailyView(date);
+    }
+
     function checkValidReservation(reservationData, editing) {
         let valid = true;
 
@@ -1472,7 +1476,7 @@ function ReserveAdmin(props) {
         <>
             <div className="container-reserve">
                 <div className="reservation-content-title">
-                    {courtsNumberArray.map((val, idx) => {
+                    {!dailyView && courtsNumberArray.map((val, idx) => {
                         return (
                             <span
                                 key={idx}
@@ -1487,23 +1491,42 @@ function ReserveAdmin(props) {
                         )
                     })}
                 </div>
-                <div className="reserve-form-container">
+                <div className="reserve-form-container"
+                    style={{
+                        width: dailyView ? "120vmin" : "",
+                        maxWidth: dailyView ? "90%" : ""
+                    }}
+                >
                     <div className="table-labels-container">
-                        {daysArray.map((day, index) => {
+                        {!dailyView && daysArray.map((day, index) => {
                             return (
                                 <div className="table-label" key={index} style={columnDays[index].closed ? {backgroundColor: "#D9D9D9", color: "rgba(0,0,0,0.5)"} : {}}>
                                     {/* {day == 0 ? "Today" : convertDate(dateToday.getDate()+day)} */}
                                     {/* {convertDate(dateToday.getDate()+day)} */}
                                     {getFormattedDate((7 * sessionStorage.getItem("adminGlobalDate")) + day)}
-                                    <div className="table-label-date-close"
-                                        onClick={() => {
-                                            handleDateCloseOpen(index);
-                                        }}
-                                    >
-                                        <div className="table-label-date-close-btn" style={columnDays[index].closed ? {backgroundColor: "#8AA2FF"} : {}}>
+                                    <div className="table-label-date-close">
+                                        <div className="table-label-date-daily-btn"
+                                            onClick={() => {
+                                                handleToggleDaily(getFormattedDate((7 * sessionStorage.getItem("adminGlobalDate")) + day));
+                                            }}
+                                        >
+                                            View
+                                        </div>
+                                        <div className="table-label-date-close-btn" style={columnDays[index].closed ? {backgroundColor: "#8AA2FF"} : {}}
+                                            onClick={() => {
+                                                handleDateCloseOpen(index);
+                                            }}
+                                        >
                                             {columnDays[index].closed == false ? "Close" : "Open"}
                                         </div>
                                     </div>
+                                </div>
+                            );
+                        })}
+                        {dailyView && courtsNumberArray.map((court, index) => {
+                            return (
+                                <div className="table-label" key={index}>
+                                    
                                 </div>
                             );
                         })}
@@ -1525,7 +1548,11 @@ function ReserveAdmin(props) {
                         {/* <span className="legend-item"><div className="legend-item-color" style={{backgroundColor: 'rgb(255, 200, 60)'}}></div>My Event Reservation</span> */}
                     </div>
                 </div>
-                <div className="week-selector-container">
+                <div className="week-selector-container"
+                    style={{
+                        right: dailyView ? "calc(calc(50% - 4vmin) - 62vmin)" : "", 
+                    }}
+                >
                     <button className="week-selector-btn"
                         onClick={() => {
                             handleWeekNext();
@@ -1924,7 +1951,7 @@ function ReserveAdmin(props) {
                 </div>
             </div>
             {/* <Loading timeRange={[1000,2000]}/> */}
-            {document.getElementById('court-item-id-0') && 
+            {!dailyView && document.getElementById('court-item-id-0') && 
                 <div className="court-follower" style={{
                     left: document.getElementById('court-item-id-0').getBoundingClientRect().x + "px",
                     top: document.getElementById('court-item-id-0').getBoundingClientRect().top + "px",

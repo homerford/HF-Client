@@ -11,6 +11,7 @@ Reservations:
     5. (Complete) Give admin reservation modal a timepicker.
     6. (Complete) Admin reservation title change to customer name.
     7. Admin reservation daily view.
+        - Access via clicking day on admin reservation page
     8. Admin reservation multicourt highlight(similar to Excel).
     9. Split reservations depending on length. 1 & 1.5 hours & 2 hours.
     10. Click on user to go to user page.

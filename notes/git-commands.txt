@@ -2,7 +2,7 @@
 git add .
 
 // Commit local repo with message
-git commit -m "Added user first/last name to admin reservations"
+git commit -m "Initial daily view changes..."
 
 // Push to remote repo
 git push -u origin main
