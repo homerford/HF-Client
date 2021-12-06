@@ -9,6 +9,11 @@ Reservations:
     3. (Complete) Existing customer reservations only show current/future.
     4. (Complete) Don't allow reservations before the current datetime.
     5. (Complete) Give admin reservation modal a timepicker.
+    6. (Complete) Admin reservation title change to customer name.
+    7. Admin reservation daily view.
+    8. Admin reservation multicourt highlight(similar to Excel).
+    9. Split reservations depending on length. 1 & 1.5 hours & 2 hours.
+    10. Click on user to go to user page.
 
 Alerts:
     1. SMS 
@@ -18,12 +23,18 @@ Login:
 
 Admin:
 
+Feedback:
+    1. No categories!
+    2. Star system
+
 Closures:
 
 Reports:
+    1. Variable date ranges.
 
 Account:
-    2. Allow customers to edit email, firstname/lastname, and phone#(once a month)
+    1. Allow customers to edit email, firstname/lastname, and phone#(once a month)
+    2. Add user note
 
 Contact:
 

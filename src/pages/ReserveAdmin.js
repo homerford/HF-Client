@@ -1057,7 +1057,8 @@ function ReserveAdmin(props) {
                         ? 
                         <div className="res-admin-info">
                             <span className="res-text">
-                                {reservations.find(el => el.id == slots[index].reservation).timeStart + " - "+reservations.find(el => el.id == slots[index].reservation).duration+" hour(s)"}
+                                {/* {reservations.find(el => el.id == slots[index].reservation).timeStart + " - "+reservations.find(el => el.id == slots[index].reservation).duration+" hour(s)"} */}
+                                {userArray.length > 0 && userArray.find(user => user.User_id == reservations.find(el => el.id == slots[index].reservation).customer_id).User_firstname + " " + userArray.find(user => user.User_id == reservations.find(el => el.id == slots[index].reservation).customer_id).User_lastname}
                             </span>
                             <span className="res-text" id="ref-res" style={{marginRight: '0.75vmin', color: 'rgba(0,0,0,0.35)', opacity: '0%', pointerEvents: 'none', height: "0vmin"}}>
                                 {reservations.find(el => el.id == slots[index].reservation).id}
