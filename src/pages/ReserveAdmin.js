@@ -759,10 +759,129 @@ function ReserveAdmin(props) {
         return (returnData);
     }
 
-    function renderColumns() {
+    function renderColumns(day_view) {
         var returnData = [];
+        
+        {day_view && courtsNumberArray.forEach((court, index) => {
+            let day = {
+                date: getFormattedDate((7 * sessionStorage.getItem("adminGlobalDate")) + 0),
+                slots: timeslotsJSON,
+                closed: false
+            }
 
-        columnDays.forEach((day, index) => {
+            var dateRaw = convertToDateFromString(day.date);
+            var dateRawDay = dateRaw.toLocaleString('en-us', {  weekday: 'short' });
+            var dayTimeslots = timeslotsJSON;
+
+            if(dateRawDay == 'Sat' || dateRawDay == 'Sun') {
+                dayTimeslots.forEach((slot) => {
+                    var timeRaw = (slot.time).substring(0,(slot.time).length - 2);
+                    var amOrPM = (slot.time).substring((slot.time).length - 2);
+                    var timeHour = timeRaw.split(':')[0];
+                    var timeMinutes = timeRaw.split(':')[1];
+
+                    if(timeHour >= 6 && timeHour != 12 && amOrPM == 'pm') {
+                        slot.status = 'closed'
+                    }
+                    else if(timeHour == 7 && timeMinutes < 30 && amOrPM == 'am') {
+                        slot.status = 'closed'
+                    }
+                    else {
+                        slot.status = 'open'
+                        slot.reservation = null;
+                    }
+                })
+            }
+            else {
+                dayTimeslots.forEach((slot) => {
+                    var timeRaw = (slot.time).substring(0,(slot.time).length - 2);
+                    var amOrPM = (slot.time).substring((slot.time).length - 2);
+                    var timeHour = timeRaw.split(':')[0];
+                    var timeMinutes = timeRaw.split(':')[1];
+
+                    if(timeHour >= 9 && timeHour != 12 && amOrPM == 'pm') {
+                        slot.status = 'closed'
+                    }
+                    else if(timeHour == 7 && timeMinutes < 30 && amOrPM == 'am') {
+                        slot.status = 'closed'
+                    }
+                    else {
+                        slot.status = 'open'
+                        slot.reservation = null;
+                    }
+                })
+            }
+
+            if(day.closed) {
+                dayTimeslots.forEach((slot) => {
+                    slot.status = 'closed'
+                })
+            }
+
+            reservations.forEach((reservation) => {
+                if(reservation.date == day.date && reservation.court_id == court) {
+                    var resType = reservation.type_id;
+                    var resStartTimeRaw = (reservation.timeStart).substring(0,(reservation.timeStart).length - 2);
+                    var resAmOrPM = (reservation.timeStart).substring((reservation.timeStart).length - 2);
+
+                    var resTimeHour = resStartTimeRaw.split(':')[0];
+                    var resTimeMinutes = resStartTimeRaw.split(':')[1];
+
+                    var resIdBuffer = -1;
+                    var startIndex = -1;
+                    dayTimeslots.forEach((slot, index) => {
+                        var timeRaw = (slot.time).substring(0,(slot.time).length - 2);
+                        var amOrPM = (slot.time).substring((slot.time).length - 2);
+                        var timeHour = timeRaw.split(':')[0];
+                        var timeMinutes = timeRaw.split(':')[1];
+    
+                        if(timeHour == resTimeHour 
+                            && timeMinutes == resTimeMinutes 
+                            && amOrPM == resAmOrPM) {
+                            slot.status = resType == -1 ? 'closed' : 'reserved';
+                            slot.reservation = reservation.id;
+                            resIdBuffer = reservation.id;
+                            startIndex = index;
+                        }
+                        
+                        if(startIndex > -1 && (index - startIndex < reservation.duration * 4)) {
+                            slot.status = resType == -1 ? 'closed' : 'reserved';
+                            slot.reservation = resIdBuffer;
+                        }
+                    });
+                }
+            })
+
+            if(dateRawDay == 'Sat' || dateRawDay == 'Sun') {
+                dayTimeslots.forEach((slot) => {
+                    var timeRaw = (slot.time).substring(0,(slot.time).length - 2);
+                    var amOrPM = (slot.time).substring((slot.time).length - 2);
+                    var timeHour = timeRaw.split(':')[0];
+                    var timeMinutes = timeRaw.split(':')[1];
+
+                    if(timeHour >= 6 && timeHour != 12 && amOrPM == 'pm') {
+                        slot.status = 'closed'
+                        slot.reservation = null;
+                    }
+                    else if(timeHour == 7 && timeMinutes < 30 && amOrPM == 'am') {
+                        slot.status = 'closed'
+                        slot.reservation = null;
+                    }
+                })
+            }
+
+            returnData.push(
+                <div key={index} className="table-content-column"
+                    style={{
+                        width: "6%"
+                    }}
+                >
+                    {renderColumnItems('12/7/2021', timeslotsJSON)}
+                </div>
+            )
+        })}
+
+        {!day_view && columnDays.forEach((day, index) => {
             var dateRaw = convertToDateFromString(day.date);
             var dateRawDay = dateRaw.toLocaleString('en-us', {  weekday: 'short' });
             var dayTimeslots = timeslotsJSON;
@@ -871,7 +990,7 @@ function ReserveAdmin(props) {
                     {renderColumnItems(day.date,dayTimeslots)}
                 </div>
             )
-        })
+        })}
         // setColumnsToRender(returnData);
         return (returnData);
     }
@@ -1525,8 +1644,12 @@ function ReserveAdmin(props) {
                         })}
                         {dailyView && courtsNumberArray.map((court, index) => {
                             return (
-                                <div className="table-label" key={index}>
-                                    
+                                <div className="table-label" key={index}
+                                    style={{
+                                        width: "6%"
+                                    }}
+                                >
+                                    Court {court}
                                 </div>
                             );
                         })}
@@ -1536,7 +1659,7 @@ function ReserveAdmin(props) {
                             {renderTimeColumn()}
                         </div>
 
-                        {renderColumns()}
+                        {renderColumns(dailyView)}
                         {/* {columnsToRender} */}
                     </div>
                     <div className="reservation-legend">
