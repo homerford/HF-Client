@@ -764,7 +764,7 @@ function ReserveAdmin(props) {
         
         {day_view && courtsNumberArray.forEach((court, index) => {
             let day = {
-                date: getFormattedDate((7 * sessionStorage.getItem("adminGlobalDate")) + 0),
+                date: dailyView,
                 slots: timeslotsJSON,
                 closed: false
             }
@@ -1174,10 +1174,21 @@ function ReserveAdmin(props) {
                     >
                         {(slots[index-2].reservation != slots[index].reservation && slots[index-1].reservation == slots[index].reservation) 
                         ? 
-                        <div className="res-admin-info">
+                        <div className="res-admin-info"
+                            style={{
+                                padding: dailyView ? '0vmin' : '',
+                                bottom: dailyView ? '0.65vmin' : '',
+                                boxShadow: dailyView ? '0 0 0 0' : '',
+                                width: dailyView ? '90%' : '',
+                                borderRadius: dailyView ? '1vmin' : '',
+                                paddingRight: dailyView ? '0.5vmin' : '',
+                                textAlign: dailyView ? 'center' : '',
+                            }}
+                        >
                             <span className="res-text">
                                 {/* {reservations.find(el => el.id == slots[index].reservation).timeStart + " - "+reservations.find(el => el.id == slots[index].reservation).duration+" hour(s)"} */}
-                                {userArray.length > 0 && userArray.find(user => user.User_id == reservations.find(el => el.id == slots[index].reservation).customer_id).User_firstname + " " + userArray.find(user => user.User_id == reservations.find(el => el.id == slots[index].reservation).customer_id).User_lastname}
+                                {!dailyView && userArray.length > 0 && userArray.find(user => user.User_id == reservations.find(el => el.id == slots[index].reservation).customer_id).User_firstname + " " + userArray.find(user => user.User_id == reservations.find(el => el.id == slots[index].reservation).customer_id).User_lastname}
+                                {dailyView && userArray.length > 0 && userArray.find(user => user.User_id == reservations.find(el => el.id == slots[index].reservation).customer_id).User_firstname + " " + userArray.find(user => user.User_id == reservations.find(el => el.id == slots[index].reservation).customer_id).User_lastname.substring(0,1)+"."}
                             </span>
                             <span className="res-text" id="ref-res" style={{marginRight: '0.75vmin', color: 'rgba(0,0,0,0.35)', opacity: '0%', pointerEvents: 'none', height: "0vmin"}}>
                                 {reservations.find(el => el.id == slots[index].reservation).id}
@@ -1188,7 +1199,15 @@ function ReserveAdmin(props) {
                         {(slots[index+1].reservation != slots[index].reservation) 
                         ? 
                         <>
-                            {<span className="res-text-button" style={{marginRight: '0.75vmin', marginLeft: '0.75vmin', color: 'rgba(0,0,0,0.75)'}}
+                            {<span className="res-text-button" 
+                                style={{
+                                    marginRight: dailyView ? '0' : '0.75vmin',
+                                    marginLeft: dailyView ? '0' : '0.75vmin', 
+                                    color: 'rgba(0,0,0,0.75)',
+                                    top: dailyView ? '-0.3vmin' : '',
+                                    padding: dailyView ? '0.35vmin' : '',
+                                    backgroundColor: dailyView ? 'rgba(0,0,0,0.0)' : '',
+                                }}
                                 onClick={(e) => {
                                     editing = true;
 
@@ -1248,7 +1267,15 @@ function ReserveAdmin(props) {
                                 Edit
                             </span>}
                             {/* (currentUser) && (currentUser.User_id == reservations.find(el => el.id == slots[startIndex].reservation).customer_id) &&  */}
-                            {(currentUser.User_type == 2) && <span className="res-text-button" style={{marginRight: '0.75vmin', color: 'rgba(0,0,0,0.45)'}}
+                            {(currentUser.User_type == 2) && 
+                            <span className="res-text-button" 
+                                style={{
+                                    marginRight: dailyView ? '0' : '0.75vmin',
+                                    color: 'rgba(0,0,0,0.45)',
+                                    top: dailyView ? '-0.3vmin' : '',
+                                    padding: dailyView ? '0.35vmin' : '',
+                                    backgroundColor: dailyView ? 'rgba(0,0,0,0.0)' : '',
+                            }}
                                 onClick={(e) => {
                                     var testRootId = e.currentTarget.parentNode.id;
                                     var testRootDuration = reservations.find(el => el.id == testRootId).duration;
@@ -1609,6 +1636,27 @@ function ReserveAdmin(props) {
                             </span>
                         )
                     })}
+                    {dailyView && 
+                        <>
+                            <span
+                                style={{
+                                    position: 'absolute',
+                                    left: 'calc(50% - 60vmin)',
+                                    fontSize: '1.5vmin',
+                                    cursor: 'pointer',
+                                    opacity: '0.5'
+                                }}
+                                onClick={() => {
+                                    setDailyView('');
+                                }}
+                            >
+                                {`Back to Week View`}
+                            </span>
+                            <span>
+                                {dailyView}
+                            </span>
+                        </>
+                    }
                 </div>
                 <div className="reserve-form-container"
                     style={{
