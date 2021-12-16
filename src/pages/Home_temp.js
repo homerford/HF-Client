@@ -1,4 +1,4 @@
-import {useState}                                           from 'react';
+import React, {useState}                                    from 'react';
 import {Navbar, UncontrolledCarousel}                       from "reactstrap";
 import styled                                               from 'styled-components';
 import AddressMap                                           from '../assets/images/team-images/map2.png'
