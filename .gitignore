@@ -21,3 +21,8 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+/.idea/discord.xml
+/.idea/HF-Client.iml
+/.idea/modules.xml
+/.idea/vcs.xml
+/.idea/.gitignore

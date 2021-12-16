@@ -30,6 +30,7 @@ import socketIOClient from "socket.io-client";
 
 // Importing common files used in react
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
+import Home_temp from "./pages/Home_temp";
 
 const socket_ip = "http://52.4.223.125:4001";
 const socket = socketIOClient(socket_ip);
@@ -37,7 +38,7 @@ const socket = socketIOClient(socket_ip);
 // Root application function
 function App() {
   const [screenSize, setScreenSize] = useState([window.innerWidth, window.innerHeight]);
-  const [isMobile, setIsMobile] = useState(screenSize[0] < screenSize[1] ? true : false);
+  const [isMobile, setIsMobile] = useState(screenSize[0] < screenSize[1]);
   const [currentUser, setCurrentUser] = useState(JSON.parse(window.sessionStorage.getItem('current_user')));
   const [loggedIn, setLogginIn] = useState(window.sessionStorage.getItem('current_user') ? true : false);
 
@@ -63,34 +64,34 @@ function App() {
     // Root 'Router' element for switching between pages. The return can have only one root element.
     <Router>
       <div>
-        {!isMobile && <nav className="app-navigation-new" id="navbar">
-          {/* Visible link elements to different pages */}
-          <Link className="route-link-title" to="/">🎾 <div className="title-tint-text-1">Homer Ford</div> <div className="title-tint-text-2">Tennis Center</div></Link>
-          <div className="new-menu-container">
-            <Link className="new-route-link-menu" to="/">Home</Link>
-            <Link className="new-route-link-menu" to="/about">About</Link>
-            <Link className="new-route-link-menu" to="/contact">Contact</Link>
-            {loggedIn && <Link className="new-route-link-menu" to="/account">Account</Link>}
-            <Link className="new-route-link-menu" to={loggedIn ? "/reserve" : "/login"}>Reserve</Link>
-            {(currentUser && (currentUser.User_type == 2 || currentUser.User_type == 1)) && <Link className="new-route-link-menu" to="/admin">Manage</Link>}
-            {loggedIn && 
-              <div className="new-route-link-menu-2"
-                onClick={() => {
-                  window.sessionStorage.removeItem('current_user');
-                  window.sessionStorage.removeItem('current_user_object');
-                  window.location.href = '/';
-                }}
-              >
-                Logout
-              </div>
-            }
-            {!loggedIn && 
-              <Link className="new-route-link-menu-2" to="/login">Login</Link>
-            }
-          </div>
-        </nav>}
-
-        {isMobile && <div>Mobile Navigation Bar</div>}
+        {/*{!isMobile && <nav className="app-navigation-new" id="navbar">*/}
+        {/*   Visible link elements to different pages */}
+        {/*  <Link className="route-link-title" to="/">🎾 <div className="title-tint-text-1">Homer Ford</div> <div className="title-tint-text-2">Tennis Center</div></Link>*/}
+        {/*  <div className="new-menu-container">*/}
+        {/*    <Link className="new-route-link-menu" to="/">Home</Link>*/}
+        {/*    <Link className="new-route-link-menu" to="/about">About</Link>*/}
+        {/*    <Link className="new-route-link-menu" to="/contact">Contact</Link>*/}
+        {/*    {loggedIn && <Link className="new-route-link-menu" to="/account">Account</Link>}*/}
+        {/*    <Link className="new-route-link-menu" to={loggedIn ? "/reserve" : "/login"}>Reserve</Link>*/}
+        {/*    {(currentUser && (currentUser.User_type == 2 || currentUser.User_type == 1)) && <Link className="new-route-link-menu" to="/admin">Manage</Link>}*/}
+        {/*    {loggedIn &&*/}
+        {/*      <div className="new-route-link-menu-2"*/}
+        {/*        onClick={() => {*/}
+        {/*          window.sessionStorage.removeItem('current_user');*/}
+        {/*          window.sessionStorage.removeItem('current_user_object');*/}
+        {/*          window.location.href = '/';*/}
+        {/*        }}*/}
+        {/*      >*/}
+        {/*        Logout*/}
+        {/*      </div>*/}
+        {/*    }*/}
+        {/*    {!loggedIn &&*/}
+        {/*      <Link className="new-route-link-menu-2" to="/login">Login</Link>*/}
+        {/*    }*/}
+        {/*  </div>*/}
+        {/*</nav>}*/}
+        
+        {/*{isMobile && <div>Mobile Navigation Bar</div>}*/}
 
         {/* Route path definitions */}
         <Switch>
@@ -134,7 +135,7 @@ function App() {
             <PasswordReset isMobile={isMobile} />
           </Route>
           <Route path="/">
-            <Home isMobile={isMobile} currentUser={currentUser} />
+            <Home_temp isMobile={isMobile} currentUser={currentUser} />
           </Route>
         </Switch>
       </div>

@@ -1,0 +1,7 @@
+.carousel-item img{
+    max-height: 500px;
+}
+
+.carousel-item div h3{
+    color: white;
+}

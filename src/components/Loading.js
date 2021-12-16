@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import '../assets/styles/Reserve.css';
 
 function Loading(props) {
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     const loadingTimeRange = [props.timeRange[0], props.timeRange[1]];
 
