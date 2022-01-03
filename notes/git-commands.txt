@@ -2,7 +2,7 @@
 git add .
 
 // Commit local repo with message
-git commit -m "Fixed some stylings for daily view"
+git commit -m "Reverted to previous homepage"
 
 // Push to remote repo
 git push -u origin main
